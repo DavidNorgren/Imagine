@@ -54,6 +54,34 @@ void Mineimator::TabSection::draw()
 }
 
 
+void Mineimator::TabSection::mouseEvent()
+{
+    openButton->mouseEvent();
+    
+    if (!open) {
+        return;
+    }
+    
+    for (Control* control : controls) {
+        control->mouseEvent();
+    }
+}
+
+
+void Mineimator::TabSection::keyEvent()
+{
+    openButton->keyEvent();
+    
+    if (!open) {
+        return;
+    }
+    
+    for (Control* control : controls) {
+        control->keyEvent();
+    }
+}
+
+
 void Mineimator::TabSection::setParent(Element* parent)
 {
     this->parent = parent;

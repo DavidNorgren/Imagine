@@ -28,11 +28,15 @@ namespace Mineimator
         public:
 
             string name;
+            std::function<void()> clickFunc = nullptr;
             std::function<bool()> visibleFunc;
             int height = 0;
+            bool mouseOn = false, pressed = false;
             
             /* Element methods. */
             void update() override;
+            void mouseEvent() override;
+            void keyEvent() override;
             void setParent(Element* parent) override;
     };
     

@@ -22,6 +22,22 @@ void Mineimator::Tab::draw()
 }
 
 
+void Mineimator::Tab::mouseEvent()
+{
+    for (TabSection* section : sections) {
+        section->mouseEvent();
+    }
+}
+
+
+void Mineimator::Tab::keyEvent()
+{
+    for (TabSection* section : sections) {
+        section->keyEvent();
+    }
+}
+
+
 void Mineimator::Tab::setParent(Element* parent)
 {
     this->parent = parent;

@@ -30,6 +30,22 @@ void Mineimator::Row::draw()
 }
 
 
+void Mineimator::Row::mouseEvent()
+{
+    for (Control* control : controls) {
+        control->mouseEvent();
+    }
+}
+
+
+void Mineimator::Row::keyEvent()
+{
+    for (Control* control : controls) {
+        control->keyEvent();
+    }
+}
+
+
 void Mineimator::Row::setParent(Element* parent)
 {
     this->parent = parent;

@@ -87,17 +87,21 @@ void Mineimator::InterfaceHandler::draw()
     }
 }
 
-/*
-void Mineimator::InterfaceHandler::mouseEvent(MouseEvent* event)
+
+void Mineimator::InterfaceHandler::mouseEvent()
 {
-    // TODO
+    for (Panel* panel : panels) {
+        panel->mouseEvent();
+    }
 }
 
 
-void Mineimator::InterfaceHandler::keyEvent(KeyEvent* event)
+void Mineimator::InterfaceHandler::keyEvent()
 {
-    // TODO
-}*/
+    for (Panel* panel : panels) {
+        panel->keyEvent();
+    }
+}
 
 
 void Mineimator::InterfaceHandler::setParent(Element* parent)

@@ -16,8 +16,8 @@ class Element
         virtual void draw() = 0;
         
         /* Handles user input. */
-        void mouseEvent(MouseEvent* event)  {};
-        void keyEvent(KeyEvent* event)  {};
+        virtual void mouseEvent() = 0;
+        virtual void keyEvent() = 0;
         
         /* Sets the parent element and continues with the child elements. */
         virtual void setParent(Element* parent) = 0;

@@ -29,10 +29,10 @@ namespace Mineimator
             void loopEvent() override;
             
             /* Called when the mouse is moved or clicked. */
-            void mouseEvent(MouseEvent* event) override;
+            void mouseEvent() override;
             
             /* Called when a key is pressed. */
-            void keyEvent(KeyEvent* event) override;
+            void keyEvent() override;
 
             /* Called by the main window when resized. */
             void resizeEvent() override;

@@ -10,23 +10,6 @@ void Mineimator::CheckBox::update()
 
 void Mineimator::CheckBox::draw()
 {
-    // Check mouse
-    bool mouseOn, pressed;
-    mouseOn = mouseInBox(box);
-    pressed = (mouseOn && (mouseLeftDown() || mouseLeftReleased()));
-    if (mouseOn)
-    {
-        mouseSetCursor(HANDPOINT);
-        if (pressed && mouseLeftReleased())
-        {
-            mouseClear();
-            if (checkFunc) {
-                checkFunc();
-            }
-            checked = !checked;
-        }
-    }
-    
     // Box
     drawImage(IMAGE_CHECKBOX, pos, pressed ? SETTING_INTERFACE_COLOR_BOXES_PRESSED : SETTING_INTERFACE_COLOR_BOXES);
     

@@ -28,6 +28,26 @@ void Mineimator::Panel::draw()
 }
 
 
+void Mineimator::Panel::mouseEvent()
+{
+    if (!selectedTab) {
+        return;
+    }
+    
+    selectedTab->mouseEvent();
+}
+
+
+void Mineimator::Panel::keyEvent()
+{
+    if (!selectedTab) {
+        return;
+    }
+    
+    selectedTab->keyEvent();
+}
+
+
 void Mineimator::Panel::setParent(Element* parent)
 {
     this->parent = parent;

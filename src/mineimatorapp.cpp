@@ -27,15 +27,15 @@ void Mineimator::App::loopEvent()
 }
 
 
-void Mineimator::App::mouseEvent(MouseEvent* event)
+void Mineimator::App::mouseEvent()
 {
-    //interfaceHandler->mouseEvent(event);
+    interfaceHandler->mouseEvent();
 }
 
 
-void Mineimator::App::keyEvent(KeyEvent* event)
+void Mineimator::App::keyEvent()
 {
-    //interfaceHandler->keyEvent(event);
+    interfaceHandler->keyEvent();
 }
 
 

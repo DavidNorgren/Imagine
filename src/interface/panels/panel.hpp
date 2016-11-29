@@ -39,8 +39,8 @@ namespace Mineimator
             /* Element methods. */
             void update() override;
             void draw() override;
-            //void mouseEvent(MouseEvent* event);
-            //void keyEvent(KeyEvent* event);
+            void mouseEvent() override;
+            void keyEvent() override;
             void setParent(Element* parent) override;
 
             Location location;

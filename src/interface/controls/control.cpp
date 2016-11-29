@@ -7,6 +7,31 @@ void Mineimator::Control::update()
 }
 
 
+void Mineimator::Control::mouseEvent()
+{
+    mouseOn = mouseInBox(box);
+    pressed = false;
+    
+    if (mouseOn)
+    {
+        if (mouseLeftDown()) {
+            pressed = true;
+        }
+        if (mouseLeftReleased() && clickFunc) {
+            clickFunc();
+            //mouseClear();
+        }
+        mouseSetCursor(HANDPOINT);
+    }
+}
+
+
+void Mineimator::Control::keyEvent()
+{
+    
+}
+
+
 void Mineimator::Control::setParent(Element* parent)
 {
     this->parent = parent;

@@ -26,10 +26,7 @@ namespace Mineimator
 
             /* Element methods. */
             void draw() override;
-            //void mouseEvent(MouseEvent* event) override;
-            //void keyEvent(KeyEvent* event) override;
             
-            std::function<void()> clickFunc;
             int icon;
     };
     

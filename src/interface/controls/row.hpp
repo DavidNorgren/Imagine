@@ -21,8 +21,8 @@ namespace Mineimator
             /* Element methods. */
             void update() override;
             void draw() override;
-            //void mouseEvent(MouseEvent* event) override;
-            //void keyEvent(KeyEvent* event) override;
+            void mouseEvent() override;
+            void keyEvent() override;
             void setParent(Element* parent) override;
 
             std::vector<Control*> controls;
