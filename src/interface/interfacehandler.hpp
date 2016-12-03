@@ -6,19 +6,10 @@
 #include "base.hpp"
 using namespace Base;
 
-#include "interface/controls/control.hpp"
-#include "interface/controls/button.hpp"
-#include "interface/controls/checkbox.hpp"
-#include "interface/controls/row.hpp"
-#include "interface/controls/textbox.hpp"
-#include "interface/panels/panel.hpp"
+#include "interface/interfacestate.hpp"
+#include "interface/workspace.hpp"
 #include "interface/images.hpp"
 #include "settings/settings.hpp"
-
-#define PANEL_START_WIDTH   380
-#define PANEL_START_HEIGHT  210
-#define PANEL_MIN_WIDTH     300
-#define PANEL_MIN_HEIGHT    50
 
 
 namespace Mineimator
@@ -39,13 +30,10 @@ namespace Mineimator
             void keyEvent() override;
             void setParent(Element* parent) override;
             
-            /* Create the tabs. */
-            void createTabProperties();
-            void createTabTimeline();
+            Workspace* workspace;
             
-            std::vector<Panel*> panels;
-            Tab* tabProperties;
-            Tab* tabTimeline;
+            InterfaceState state = IDLE;
+            Control* focus = nullptr;
     };
 
 }

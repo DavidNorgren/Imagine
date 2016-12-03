@@ -3,14 +3,15 @@
 #include <iostream>
 
 
-void Mineimator::InterfaceHandler::createTabProperties()
+void Mineimator::Workspace::initTabProperties()
 {
     tabProperties = new Tab("properties", true, false,
         {
             new TabSection("Section A", true,
                 {
                     new CheckBox("Test"),
-                    new CheckBox("TEST")
+                    new CheckBox("TEST"),
+                    new TextBox()
                 }
             ),
             new TabSection("Section B", true,

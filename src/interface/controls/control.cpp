@@ -1,4 +1,5 @@
 #include "interface/controls/control.hpp"
+#include "mineimatorapp.hpp"
 
 
 void Mineimator::Control::update()
@@ -15,6 +16,7 @@ void Mineimator::Control::mouseEvent()
     if (mouseOn)
     {
         if (mouseLeftDown()) {
+            app->interfaceHandler->focus = this;
             pressed = true;
         }
         if (mouseLeftReleased() && clickFunc) {
