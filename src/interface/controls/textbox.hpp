@@ -25,6 +25,7 @@ namespace Mineimator
                 this->singleLine = singleLine;
                 this->visibleFunc = visibleFunc;
                 this->height = height;
+                editCaret.index = -1;
             }
             
             /* Element methods. */

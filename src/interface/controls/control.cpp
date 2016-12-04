@@ -10,7 +10,7 @@ void Mineimator::Control::update()
 
 void Mineimator::Control::mouseEvent()
 {
-    mouseOn = mouseInBox(box);
+    mouseOn = (mouseInBox(box) && app->interfaceHandler->state == IDLE);
     pressed = false;
     
     if (mouseOn)

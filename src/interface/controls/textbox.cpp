@@ -6,21 +6,26 @@
 
 void Mineimator::TextBox::draw()
 {
+    // Box
     drawBox(box, SETTING_INTERFACE_COLOR_BOXES);
-    if (isFocused()) {
+    
+    // Text selection
+    if (isFocused())
+    {
         drawBox(box, Color(0, 0, 255, 200), true);
         drawLine(box.pos + editCaret.pos, box.pos + editCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") }, SETTING_INTERFACE_COLOR_BOXES_TEXT, 2);
         drawLine(box.pos + selectStartCaret.pos, box.pos + selectStartCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") }, COLOR_RED, 2);
         drawLine(box.pos + selectEndCaret.pos, box.pos + selectEndCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") }, COLOR_BLUE, 2);
     }
     
+    // Text
     drawText(text, box.pos, SETTING_INTERFACE_COLOR_BOXES_TEXT);
 }
 
 
 void Mineimator::TextBox::mouseEvent()
 {
-    mouseOn = mouseInBox(box);
+    mouseOn = (mouseInBox(box) && app->interfaceHandler->state == IDLE);
     pressed = false;
     
     if (mouseOn)
@@ -28,10 +33,61 @@ void Mineimator::TextBox::mouseEvent()
         if (mouseLeftPressed())
         {
             focus();
-            pressed = true;
-            clickCaret = editCaret = caretAtPos(mousePos() - box.pos);
             app->interfaceHandler->state = TEXTBOX_SELECT;
+            
+            if (!keyDown(GLFW_KEY_LEFT_SHIFT))
+            {
+                clickCaret = caretAtPos(mousePos() - box.pos);
+                
+                // Word select
+                if (editCaret.index == clickCaret.index && mouseLastClickDuration() < 1.f)
+                {
+                    std::function<bool(char)> isWordSeparator = [](char c) {
+                        return (c == '\n' ||
+                                c == ' ' ||
+                                c == '(' ||
+                                c == ')' ||
+                                c == '[' ||
+                                c == ']' ||
+                                c == '+' ||
+                                c == '/' ||
+                                c == '\\');
+                    };
+
+                    // Find beginning of word
+                    selectStartCaret = clickCaret;
+                    while (selectStartCaret.index > 0)
+                    {
+                        char currentChar = text[selectStartCaret.index - 1];
+                        if (isWordSeparator(currentChar)) {
+                            break;
+                        }
+                        selectStartCaret.index--;
+                    }
+
+                    // Find ending of word
+                    selectEndCaret = clickCaret;
+                    while (selectEndCaret.index < text.length())
+                    {
+                        char currentChar = text[selectEndCaret.index];
+                        if (isWordSeparator(currentChar)) {
+                            if (currentChar == ' ') {
+                                selectEndCaret.index++;
+                            }
+                            break;
+                        }
+                        selectEndCaret.index++;
+                    }
+
+                    selectStartCaret = caretAtIndex(selectStartCaret.index);
+                    selectEndCaret = caretAtIndex(selectEndCaret.index);
+                    editCaret = selectEndCaret;
+                    app->interfaceHandler->state = IDLE;
+                }
+            }
+            
         }
+        
         mouseSetCursor(BEAM);
     }
     
@@ -51,6 +107,8 @@ void Mineimator::TextBox::mouseEvent()
         if (!mouseLeftDown()) {
             app->interfaceHandler->state = IDLE;
         }
+        
+        mouseSetCursor(BEAM);
     }
 }
 
@@ -75,6 +133,14 @@ void Mineimator::TextBox::keyEvent()
         return;
     }
     
+    // Select all
+    if (keyDown(GLFW_KEY_LEFT_CONTROL) && keyPressed(GLFW_KEY_A)) {
+        selectStartCaret = caretAtIndex(0);
+        selectEndCaret = caretAtIndex(text.size());
+        editCaret = selectEndCaret;
+        return;
+    }
+    
     string insert = "";
     
     // Type character
@@ -89,7 +155,12 @@ void Mineimator::TextBox::keyEvent()
     
     // Paste
     else if (keyDown(GLFW_KEY_LEFT_CONTROL) && keyPressed(GLFW_KEY_V)) {
-        insert = glfwGetClipboardString(app->mainWindow->handle);
+        insert = 
+            stringReplace(
+                glfwGetClipboardString(app->mainWindow->handle),
+                "\r\n",
+                "\n"
+            );
     }
     
     // Copy/Cut
@@ -98,7 +169,11 @@ void Mineimator::TextBox::keyEvent()
         if (selectEndCaret.index != selectStartCaret.index) {
             glfwSetClipboardString(
                 app->mainWindow->handle,
-                &stringSubstring(text, selectStartCaret.index, selectEndCaret.index - selectStartCaret.index)[0]
+                &stringReplace(
+                    stringSubstring(text, selectStartCaret.index, selectEndCaret.index - selectStartCaret.index),
+                    "\n",
+                    "\r\n"
+                )[0]
             );
         }
         if (keyPressed(GLFW_KEY_C)) {
