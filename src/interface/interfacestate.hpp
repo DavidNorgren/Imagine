@@ -6,7 +6,8 @@ namespace Mineimator
     
     enum InterfaceState
     {
-        IDLE
+        IDLE,
+        TEXTBOX_SELECT
     };
     
 }

@@ -33,7 +33,7 @@ namespace Mineimator
             Workspace* workspace;
             
             InterfaceState state = IDLE;
-            Control* focus = nullptr;
+            Element* focus = nullptr;
     };
 
 }

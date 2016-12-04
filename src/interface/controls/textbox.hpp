@@ -14,10 +14,11 @@ namespace Mineimator
         public:
             
             TextBox(bool singleLine = true,
-                    std::function<bool()> visibleFunc = TRUE_FUNC) {
+                    std::function<bool()> visibleFunc = TRUE_FUNC)
+            {
                 this->singleLine = singleLine;
                 this->visibleFunc = visibleFunc;
-                height = 15 + TEXTBOX_BOX_PADDING * 2;
+                height = 20;
             }
             
             /* Element methods. */
@@ -25,6 +26,8 @@ namespace Mineimator
             void mouseEvent() override;
             void keyEvent() override;
             
+            int caretStartIndex, caretEndIndex;
+            ScreenPos caretStartPos, caretEndPos;
             bool singleLine;
             string text = "";
     };
