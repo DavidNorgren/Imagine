@@ -9,17 +9,21 @@ void Mineimator::TextBox::draw()
     // Box
     drawBox(box, SETTING_INTERFACE_COLOR_BOXES);
     
+    // Text
+    
     // Text selection
     if (isFocused())
     {
+        drawTextSelected(
+            text, box.pos, selectStartCaret.index, selectEndCaret.index,
+            SETTING_INTERFACE_COLOR_BOXES_TEXT, SETTING_INTERFACE_COLOR_HIGHLIGHT, SETTING_INTERFACE_COLOR_HIGHLIGHT_TEXT
+        );
         drawBox(box, Color(0, 0, 255, 200), true);
         drawLine(box.pos + editCaret.pos, box.pos + editCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") }, SETTING_INTERFACE_COLOR_BOXES_TEXT, 2);
-        drawLine(box.pos + selectStartCaret.pos, box.pos + selectStartCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") }, COLOR_RED, 2);
-        drawLine(box.pos + selectEndCaret.pos, box.pos + selectEndCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") }, COLOR_BLUE, 2);
     }
-    
-    // Text
-    drawText(text, box.pos, SETTING_INTERFACE_COLOR_BOXES_TEXT);
+    else {
+        drawText(text, box.pos, SETTING_INTERFACE_COLOR_BOXES_TEXT);
+    }
 }
 
 
@@ -33,6 +37,7 @@ void Mineimator::TextBox::mouseEvent()
         if (mouseLeftPressed())
         {
             focus();
+            
             app->interfaceHandler->state = TEXTBOX_SELECT;
             
             if (!keyDown(GLFW_KEY_LEFT_SHIFT))
@@ -40,52 +45,14 @@ void Mineimator::TextBox::mouseEvent()
                 clickCaret = caretAtPos(mousePos() - box.pos);
                 
                 // Word select
-                if (editCaret.index == clickCaret.index && mouseLastClickDuration() < 1.f)
+                if (editCaret.index == clickCaret.index && selectStartCaret.index == selectEndCaret.index && mouseLastClickDuration() < 1.f)
                 {
-                    std::function<bool(char)> isWordSeparator = [](char c) {
-                        return (c == '\n' ||
-                                c == ' ' ||
-                                c == '(' ||
-                                c == ')' ||
-                                c == '[' ||
-                                c == ']' ||
-                                c == '+' ||
-                                c == '/' ||
-                                c == '\\');
-                    };
-
-                    // Find beginning of word
-                    selectStartCaret = clickCaret;
-                    while (selectStartCaret.index > 0)
-                    {
-                        char currentChar = text[selectStartCaret.index - 1];
-                        if (isWordSeparator(currentChar)) {
-                            break;
-                        }
-                        selectStartCaret.index--;
-                    }
-
-                    // Find ending of word
-                    selectEndCaret = clickCaret;
-                    while (selectEndCaret.index < text.length())
-                    {
-                        char currentChar = text[selectEndCaret.index];
-                        if (isWordSeparator(currentChar)) {
-                            if (currentChar == ' ') {
-                                selectEndCaret.index++;
-                            }
-                            break;
-                        }
-                        selectEndCaret.index++;
-                    }
-
-                    selectStartCaret = caretAtIndex(selectStartCaret.index);
-                    selectEndCaret = caretAtIndex(selectEndCaret.index);
+                    selectStartCaret = caretAtIndex(findNextWord(clickCaret.index));
+                    selectEndCaret = caretAtIndex(findPreviousWord(clickCaret.index));
                     editCaret = selectEndCaret;
                     app->interfaceHandler->state = IDLE;
                 }
             }
-            
         }
         
         mouseSetCursor(BEAM);
@@ -106,6 +73,7 @@ void Mineimator::TextBox::mouseEvent()
         
         if (!mouseLeftDown()) {
             app->interfaceHandler->state = IDLE;
+            mouseClear();
         }
         
         mouseSetCursor(BEAM);
@@ -119,22 +87,53 @@ void Mineimator::TextBox::keyEvent()
         return;
     }
     
-    // Move caret right
-    if (keyPressed(GLFW_KEY_RIGHT) && editCaret.index < text.size()) {
-        editCaret = caretAtIndex(editCaret.index + 1);
-        selectStartCaret = selectEndCaret = editCaret;
-        return;
-    }
+    // Move caret
+    bool moveRight = (keyPressed(GLFW_KEY_RIGHT) && editCaret.index < text.size());
+    bool moveLeft = (keyPressed(GLFW_KEY_LEFT) && editCaret.index > 0);
+    bool moveUp = (keyPressed(GLFW_KEY_UP) && editCaret.pos.y > 0);
+    bool moveDown = (keyPressed(GLFW_KEY_DOWN) && stringGetCount(text, "\n", editCaret.index) > 0);
     
-    // Move caret left
-    if (keyPressed(GLFW_KEY_LEFT) && editCaret.index > 0) {
-        editCaret = caretAtIndex(editCaret.index - 1);
-        selectStartCaret = selectEndCaret = editCaret;
+    if (moveRight || moveLeft || moveUp || moveDown)
+    {
+        if (moveRight) {
+            if (keyDown(GLFW_KEY_LEFT_CONTROL)) {
+                editCaret = caretAtIndex(findNextWord(editCaret.index));
+            } else {
+                editCaret = caretAtIndex(editCaret.index + 1);
+            }
+        }
+        else if (moveLeft) {
+            if (keyDown(GLFW_KEY_LEFT_CONTROL)) {
+                editCaret = caretAtIndex(findPreviousWord(editCaret.index - 1));
+            } else {
+                editCaret = caretAtIndex(editCaret.index - 1);
+            }
+        }
+        else if (moveUp) {
+            editCaret = caretAtPos({ editCaret.pos.x, editCaret.pos.y - (int)(app->drawingFont->height * LINE_SPACE) });
+        }
+        else if (moveDown) {
+            editCaret = caretAtPos({ editCaret.pos.x, editCaret.pos.y + (int)(app->drawingFont->height * LINE_SPACE) });
+        }
+        
+        if (keyDown(GLFW_KEY_LEFT_SHIFT))
+        {
+            if (editCaret.index > clickCaret.index) {
+                selectStartCaret = clickCaret;
+                selectEndCaret = editCaret;
+            } else {
+                selectEndCaret = clickCaret;
+                selectStartCaret = editCaret;
+            }
+        } else {
+            clickCaret = selectStartCaret = selectEndCaret = editCaret;
+        }
         return;
     }
     
     // Select all
-    if (keyDown(GLFW_KEY_LEFT_CONTROL) && keyPressed(GLFW_KEY_A)) {
+    if (keyDown(GLFW_KEY_LEFT_CONTROL) && keyPressed(GLFW_KEY_A))
+    {
         selectStartCaret = caretAtIndex(0);
         selectEndCaret = caretAtIndex(text.size());
         editCaret = selectEndCaret;
@@ -190,7 +189,7 @@ void Mineimator::TextBox::keyEvent()
     if (selectEndCaret.index != selectStartCaret.index)
     {
         text = stringErase(text, selectStartCaret.index, selectEndCaret.index - selectStartCaret.index);
-        editCaret = selectStartCaret;
+        editCaret = clickCaret = selectEndCaret = selectStartCaret;
     }
     
     // Delete previous character
@@ -276,4 +275,53 @@ Mineimator::TextBox::Caret Mineimator::TextBox::caretAtIndex(int index)
     }
     
     return caret;
+}
+
+
+int Mineimator::TextBox::findNextWord(int index)
+{
+    while (index < text.length())
+    {
+        char currentChar = text[index];
+        if (currentChar == '\n' ||
+            currentChar == ' ' ||
+            currentChar == '(' ||
+            currentChar == ')' ||
+            currentChar == '[' ||
+            currentChar == ']' ||
+            currentChar == '+' ||
+            currentChar == '/' ||
+            currentChar == '\\')
+        {
+            if (currentChar == ' ') {
+                index++;
+            }
+            return index;
+        }
+        index++;
+    }
+    return index;
+}
+
+
+int Mineimator::TextBox::findPreviousWord(int index)
+{
+    while (index > 0)
+    {
+        char currentChar = text[index - 1];
+        if (currentChar == '\n' ||
+            currentChar == ' ' ||
+            currentChar == '(' ||
+            currentChar == ')' ||
+            currentChar == '[' ||
+            currentChar == ']' ||
+            currentChar == '+' ||
+            currentChar == '/' ||
+            currentChar == '\\')
+        {
+            return index;
+        }
+        index--;
+    }
+    return index;
 }

@@ -41,6 +41,8 @@ namespace Mineimator
             
             Caret caretAtPos(ScreenPos pos);
             Caret caretAtIndex(int index);
+            int findNextWord(int index);
+            int findPreviousWord(int index);
     };
     
 }
