@@ -13,12 +13,18 @@ namespace Mineimator
     {
         public:
             
+            struct Caret {
+                ScreenPos pos;
+                int index;
+            };
+            
             TextBox(bool singleLine = true,
+                    int height = 20,
                     std::function<bool()> visibleFunc = TRUE_FUNC)
             {
                 this->singleLine = singleLine;
                 this->visibleFunc = visibleFunc;
-                height = 20;
+                this->height = height;
             }
             
             /* Element methods. */
@@ -26,10 +32,14 @@ namespace Mineimator
             void mouseEvent() override;
             void keyEvent() override;
             
-            int caretStartIndex, caretEndIndex;
-            ScreenPos caretStartPos, caretEndPos;
+            Caret editCaret, clickCaret, selectStartCaret, selectEndCaret;
             bool singleLine;
-            string text = "";
+            string text = "0000000000000000000\n0000000000000\n0000000";
+            
+        private:
+            
+            Caret caretAtPos(ScreenPos pos);
+            Caret caretAtIndex(int index);
     };
     
 }

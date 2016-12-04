@@ -15,8 +15,10 @@ void Mineimator::Control::mouseEvent()
     
     if (mouseOn)
     {
-        if (mouseLeftDown()) {
+        if (mouseLeftPressed()) {
             app->interfaceHandler->focus = this;
+        }
+        if (mouseLeftDown()) {
             pressed = true;
         }
         if (mouseLeftReleased() && clickFunc) {

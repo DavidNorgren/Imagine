@@ -11,7 +11,7 @@ void Mineimator::Workspace::initTabProperties()
                 {
                     new CheckBox("Test"),
                     new CheckBox("TEST"),
-                    new TextBox()
+                    new TextBox(false, 100)
                 }
             ),
             new TabSection("Section B", true,
