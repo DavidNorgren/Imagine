@@ -10,7 +10,6 @@ namespace Mineimator
     class CheckBox : public Control
     {
         public:
-
             CheckBox(string name,
                      std::function<void()> checkFunc = nullptr,
                      std::function<bool()> visibleFunc = TRUE_FUNC)
@@ -24,7 +23,6 @@ namespace Mineimator
                         this->checkFunc();
                     }
                 };
-                height = 16;
                 checked = false;
             };
 
@@ -32,6 +30,7 @@ namespace Mineimator
             void update() override;
             void draw() override;
 
+        private:
             std::function<void()> checkFunc;
             bool checked; // Todo: function to get check state
     };

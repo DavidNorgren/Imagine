@@ -1,6 +1,12 @@
 #include "interface/controls/button.hpp"
 
 
+void Mineimator::Button::update()
+{
+    box.height = height;
+}
+
+
 void Mineimator::Button::draw()
 {
     ScreenPos contentPos = pos;

@@ -34,6 +34,7 @@ namespace Mineimator
             string name;
             bool visible, closeable;
             std::vector<TabSection*> sections;
+            ScreenArea selectBox;
     };
     
 }

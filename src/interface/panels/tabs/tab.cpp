@@ -9,7 +9,7 @@ void Mineimator::Tab::update()
     {
         section->box = { currentPos, box.width, 0 };
         section->update();
-        currentPos.y += section->box.height + CONTROL_MARGIN_BOTTOM;
+        currentPos.y += section->box.height;
     }
 }
 

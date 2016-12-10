@@ -16,7 +16,8 @@ void Mineimator::Row::update()
     for (Control* control : controls) {
         control->box = { currentPos, columnWidth, 0 };
         control->update();
-        height = max(control->height, height);
+        control->box.width = min(control->box.width, columnWidth);
+        box.height = max(box.height, control->box.height);
         currentPos.x += columnWidth + CONTROL_MARGIN_RIGHT + CONTROL_MARGIN_LEFT;
     }
 }

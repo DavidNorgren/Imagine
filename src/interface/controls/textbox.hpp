@@ -12,16 +12,17 @@ namespace Mineimator
     class TextBox : public Control
     {
         public:
-            
             struct Caret {
                 ScreenPos pos;
                 int index, indexWrap;
             };
             
-            TextBox(bool singleLine = true,
+            TextBox(string name,
+                    bool singleLine = true,
                     int height = 20,
                     std::function<bool()> visibleFunc = TRUE_FUNC)
             {
+                this->name = name;
                 this->singleLine = singleLine;
                 this->visibleFunc = visibleFunc;
                 this->height = height;
@@ -29,15 +30,18 @@ namespace Mineimator
             }
             
             /* Element methods. */
+            void update() override;
             void draw() override;
             void mouseEvent() override;
             void keyEvent() override;
             
+            void setText(string text);
+            
+        private:
             Caret editCaret, clickCaret, selectStartCaret, selectEndCaret;
             bool singleLine;
             string text = "", textWrap = "";
-            
-        private:
+            int height;
             
             void updateWrap();
             Caret caretAtPos(ScreenPos pos);

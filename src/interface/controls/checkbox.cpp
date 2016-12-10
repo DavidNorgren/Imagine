@@ -4,7 +4,7 @@
 void Mineimator::CheckBox::update()
 {
     box.width = 16 + 10 + stringGetWidth(name);
-    box.height = height;
+    box.height = 16;
 }
 
 

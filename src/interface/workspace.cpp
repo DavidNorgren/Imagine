@@ -13,7 +13,11 @@ Mineimator::Workspace::Workspace()
     
     // Create tabs and assign to panels
     initTabProperties();
+    initTabTimeline();
+    initTabSettings();
     panels[Panel::RIGHT_TOP]->addTab(tabProperties);
+    panels[Panel::BOTTOM]->addTab(tabTimeline);
+    panels[Panel::RIGHT_TOP]->addTab(tabSettings);
 }
 
 

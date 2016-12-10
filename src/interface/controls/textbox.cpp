@@ -4,6 +4,12 @@
 #include <iostream>
 
 
+void Mineimator::TextBox::update()
+{
+    box.height = height;
+}
+
+
 void Mineimator::TextBox::draw()
 {
     // Box
@@ -350,6 +356,8 @@ bool isWordSeparator(char c)
 
 int Mineimator::TextBox::findNextWord(int indexWrap)
 {
+    // Look to the right until a word separating character
+    // is found, or the string ends.
     while (indexWrap < textWrap.length())
     {
         if (isWordSeparator(textWrap[indexWrap])) {
@@ -366,6 +374,8 @@ int Mineimator::TextBox::findNextWord(int indexWrap)
 
 int Mineimator::TextBox::findPreviousWord(int indexWrap)
 {
+    // Look to the left until a word separating character
+    // is found, or the beginning of the string is reached.
     while (indexWrap > 0)
     {
         if (isWordSeparator(textWrap[indexWrap - 1])) {
@@ -379,6 +389,10 @@ int Mineimator::TextBox::findPreviousWord(int indexWrap)
 
 void Mineimator::TextBox::updateWrap()
 {
+    // Insert word wrapping symbols between words or characters
+    // to keep the text inside the box. They are treated as
+    // new lines when rendering, however uses a different value.
+    
     Font* font = app->drawingFont;
     int x = 0, sepIndex = -1;
     

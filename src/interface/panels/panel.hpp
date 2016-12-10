@@ -7,6 +7,9 @@ using namespace Base;
 #include "interface/controls/button.hpp"
 #include "interface/panels/tabs/tab.hpp"
 
+#define TAB_CONTENT_PADDING 8
+#define TAB_SELECT_HEIGHT 30
+
 
 namespace Mineimator
 {

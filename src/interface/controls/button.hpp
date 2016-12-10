@@ -10,7 +10,6 @@ namespace Mineimator
     class Button : public Control
     {
         public:
-
             Button(string name,
                    std::function<void()> clickFunc = nullptr,
                    int icon = NO_ICON,
@@ -25,9 +24,11 @@ namespace Mineimator
             };
 
             /* Element methods. */
+            void update() override;
             void draw() override;
             
-            int icon;
+        protected:
+            int icon, height;
     };
     
     
@@ -35,7 +36,6 @@ namespace Mineimator
     class IconButton : public Button
     {
         public:
-        
             IconButton(string name,
                        bool showText = true,
                        std::function<void()> clickFunc = nullptr,
@@ -44,12 +44,12 @@ namespace Mineimator
                        int height = 16,
                        std::function<bool()> visibleFunc = TRUE_FUNC,
                        std::function<int()> iconFunc = nullptr) :
-            Button(name,
-                   clickFunc,
-                   icon,
-                   height,
-                   visibleFunc
-            )
+                Button(name,
+                       clickFunc,
+                       icon,
+                       height,
+                       visibleFunc
+                )
             {
                 this->showText = showText;
                 this->width = width;
@@ -60,6 +60,7 @@ namespace Mineimator
             void update() override;
             void draw() override;
             
+        private:
             bool showText;
             int width;
             std::function<int(void)> iconFunc;

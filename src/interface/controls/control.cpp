@@ -2,12 +2,6 @@
 #include "mineimatorapp.hpp"
 
 
-void Mineimator::Control::update()
-{
-    box.height = height;
-}
-
-
 void Mineimator::Control::mouseEvent()
 {
     mouseOn = (mouseInBox(box) && app->interfaceHandler->state == IDLE);
@@ -23,7 +17,7 @@ void Mineimator::Control::mouseEvent()
         }
         if (mouseLeftReleased() && clickFunc) {
             clickFunc();
-            //mouseClear();
+            mouseClear();
         }
         mouseSetCursor(HANDPOINT);
     }

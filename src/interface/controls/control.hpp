@@ -16,7 +16,7 @@ using namespace Base;
 
 #define CONTROL_MARGIN_RIGHT   2
 #define CONTROL_MARGIN_LEFT    2
-#define CONTROL_MARGIN_BOTTOM  5
+#define CONTROL_MARGIN_BOTTOM  8
 
 
 namespace Mineimator
@@ -26,18 +26,18 @@ namespace Mineimator
     class Control : public Element
     {
         public:
-
-            string name;
-            std::function<void()> clickFunc = nullptr;
-            std::function<bool()> visibleFunc;
-            int height = 0;
-            bool mouseOn = false, pressed = false;
-            
             /* Element methods. */
-            void update() override;
             void mouseEvent() override;
             void keyEvent() override;
             void setParent(Element* parent) override;
+            
+            string name;
+            
+        protected:
+            std::function<void()> clickFunc = nullptr;
+            std::function<bool()> visibleFunc;
+            bool mouseOn = false, pressed = false;
+            
     };
     
 }

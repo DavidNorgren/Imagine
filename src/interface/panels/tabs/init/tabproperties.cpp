@@ -5,20 +5,26 @@
 
 void Mineimator::Workspace::initTabProperties()
 {
-    tabProperties = new Tab("properties", true, false,
+    tabProperties = new Tab("Project properties", true, false,
         {
             new TabSection("Section A", true,
                 {
                     new CheckBox("Test"),
                     new CheckBox("TEST"),
-                    new TextBox(false, 100)
+                    new LabeledGroup(
+                        {
+                            new TextBox("Name"),
+                            new TextBox("Author"),
+                            new TextBox("Description")
+                        }
+                    )
                 }
             ),
             new TabSection("Section B", true,
                 {
                     new Row(
                         {
-                            new CheckBox("Hello"),
+                            new CheckBox("HelloHello!"),
                             new CheckBox("Hello2"),
                             new CheckBox("Hello3"),
                             new CheckBox("Hello4"),

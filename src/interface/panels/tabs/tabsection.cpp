@@ -24,8 +24,8 @@ void Mineimator::TabSection::update()
     ScreenPos currentPos = pos;
     openButton->box = { currentPos, box.width, 0 };
     openButton->update();
-    currentPos.y += openButton->height + CONTROL_MARGIN_BOTTOM;
-    box.height += openButton->height + CONTROL_MARGIN_BOTTOM;
+    currentPos.y += openButton->box.height + CONTROL_MARGIN_BOTTOM;
+    box.height += openButton->box.height + CONTROL_MARGIN_BOTTOM;
     
     if (open)
     {
@@ -33,8 +33,8 @@ void Mineimator::TabSection::update()
         {
             control->box = { currentPos, box.width, 0 };
             control->update();
-            currentPos.y += control->height + CONTROL_MARGIN_BOTTOM;
-            box.height += control->height + CONTROL_MARGIN_BOTTOM;
+            currentPos.y += control->box.height + CONTROL_MARGIN_BOTTOM;
+            box.height += control->box.height + CONTROL_MARGIN_BOTTOM;
         }
     }
 }

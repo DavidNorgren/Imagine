@@ -5,6 +5,7 @@
 #include "interface/controls/checkbox.hpp"
 #include "interface/controls/row.hpp"
 #include "interface/controls/textbox.hpp"
+#include "interface/controls/labeledgroup.hpp"
 #include "interface/panels/panel.hpp"
 
 #define PANEL_START_WIDTH   380
@@ -32,10 +33,12 @@ namespace Mineimator
             /* Create the tabs. */
             void initTabProperties();
             void initTabTimeline();
+            void initTabSettings();
 
             std::vector<Panel*> panels;
             Tab* tabProperties;
             Tab* tabTimeline;
+            Tab* tabSettings;
     };
 
 }
