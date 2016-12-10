@@ -4,11 +4,8 @@
 void Mineimator::Button::draw()
 {
     ScreenPos contentPos = pos;
-    
-    // Check mouse
-    if (pressed)
-    {
-        contentPos += (ScreenPos) { 0, 1 };
+    if (pressed) {
+        contentPos += (ScreenPos){ 0, 1 };
     }
     
     // Box

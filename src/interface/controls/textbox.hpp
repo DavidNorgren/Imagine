@@ -15,7 +15,7 @@ namespace Mineimator
             
             struct Caret {
                 ScreenPos pos;
-                int index;
+                int index, indexWrap;
             };
             
             TextBox(bool singleLine = true,
@@ -35,14 +35,16 @@ namespace Mineimator
             
             Caret editCaret, clickCaret, selectStartCaret, selectEndCaret;
             bool singleLine;
-            string text = "0000000000000000000\n0000000000000\n0000000";
+            string text = "", textWrap = "";
             
         private:
             
+            void updateWrap();
             Caret caretAtPos(ScreenPos pos);
             Caret caretAtIndex(int index);
-            int findNextWord(int index);
-            int findPreviousWord(int index);
+            Caret caretAtIndexWrap(int indexWrap);
+            int findNextWord(int wrapIndex);
+            int findPreviousWord(int wrapIndex);
     };
     
 }

@@ -37,8 +37,8 @@ namespace Mineimator
             /* Called by the main window when resized. */
             void resizeEvent() override;
 
-            /* Default resource*/
-            //Resource* resMinecraft;
+            /* Default resource pack. */
+            //Resource* minecraft;
     };
 
 }

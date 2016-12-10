@@ -10,19 +10,17 @@ void Mineimator::TextBox::draw()
     drawBox(box, SETTING_INTERFACE_COLOR_BOXES);
     
     // Text
-    
-    // Text selection
     if (isFocused())
     {
         drawTextSelected(
-            text, box.pos, selectStartCaret.index, selectEndCaret.index,
+            textWrap, box.pos, selectStartCaret.indexWrap, selectEndCaret.indexWrap,
             SETTING_INTERFACE_COLOR_BOXES_TEXT, SETTING_INTERFACE_COLOR_HIGHLIGHT, SETTING_INTERFACE_COLOR_HIGHLIGHT_TEXT
         );
         drawBox(box, Color(0, 0, 255, 200), true);
         drawLine(box.pos + editCaret.pos, box.pos + editCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") }, SETTING_INTERFACE_COLOR_BOXES_TEXT, 2);
     }
     else {
-        drawText(text, box.pos, SETTING_INTERFACE_COLOR_BOXES_TEXT);
+        drawText(textWrap, box.pos, SETTING_INTERFACE_COLOR_BOXES_TEXT);
     }
 }
 
@@ -45,10 +43,10 @@ void Mineimator::TextBox::mouseEvent()
                 clickCaret = caretAtPos(mousePos() - box.pos);
                 
                 // Word select
-                if (editCaret.index == clickCaret.index && selectStartCaret.index == selectEndCaret.index && mouseLastClickDuration() < 1.f)
+                if (editCaret.indexWrap == clickCaret.indexWrap && selectStartCaret.indexWrap == selectEndCaret.indexWrap && mouseLastClickDuration() < 1.f)
                 {
-                    selectStartCaret = caretAtIndex(findNextWord(clickCaret.index));
-                    selectEndCaret = caretAtIndex(findPreviousWord(clickCaret.index));
+                    selectStartCaret = caretAtIndexWrap(findPreviousWord(clickCaret.indexWrap));
+                    selectEndCaret = caretAtIndexWrap(findNextWord(clickCaret.indexWrap));
                     editCaret = selectEndCaret;
                     app->interfaceHandler->state = IDLE;
                 }
@@ -62,7 +60,7 @@ void Mineimator::TextBox::mouseEvent()
     {
         editCaret = caretAtPos(mousePos() - box.pos);
         
-        if (editCaret.index < clickCaret.index) {
+        if (editCaret.indexWrap < clickCaret.indexWrap) {
             selectStartCaret = editCaret;
             selectEndCaret = clickCaret;
         }
@@ -88,25 +86,29 @@ void Mineimator::TextBox::keyEvent()
     }
     
     // Move caret
-    bool moveRight = (keyPressed(GLFW_KEY_RIGHT) && editCaret.index < text.size());
-    bool moveLeft = (keyPressed(GLFW_KEY_LEFT) && editCaret.index > 0);
+    bool moveRight = (keyPressed(GLFW_KEY_RIGHT) && editCaret.indexWrap < textWrap.size());
+    bool moveLeft = (keyPressed(GLFW_KEY_LEFT) && editCaret.indexWrap > 0);
     bool moveUp = (keyPressed(GLFW_KEY_UP) && editCaret.pos.y > 0);
-    bool moveDown = (keyPressed(GLFW_KEY_DOWN) && stringGetCount(text, "\n", editCaret.index) > 0);
+    bool moveDown = (keyPressed(GLFW_KEY_DOWN) && stringGetCount(textWrap, "\n", editCaret.indexWrap) + stringGetCount(textWrap, "\r", editCaret.indexWrap) > 0);
     
     if (moveRight || moveLeft || moveUp || moveDown)
     {
-        if (moveRight) {
+        if (moveRight)
+        {
             if (keyDown(GLFW_KEY_LEFT_CONTROL)) {
-                editCaret = caretAtIndex(findNextWord(editCaret.index));
-            } else {
-                editCaret = caretAtIndex(editCaret.index + 1);
+                editCaret = caretAtIndexWrap(findNextWord(editCaret.indexWrap));
+            }
+            else {
+                editCaret = caretAtIndexWrap(editCaret.indexWrap + 1);
             }
         }
-        else if (moveLeft) {
+        else if (moveLeft)
+        {
             if (keyDown(GLFW_KEY_LEFT_CONTROL)) {
-                editCaret = caretAtIndex(findPreviousWord(editCaret.index - 1));
-            } else {
-                editCaret = caretAtIndex(editCaret.index - 1);
+                editCaret = caretAtIndexWrap(findPreviousWord(editCaret.indexWrap - 1));
+            }
+            else {
+                editCaret = caretAtIndexWrap(editCaret.indexWrap - 1);
             }
         }
         else if (moveUp) {
@@ -118,14 +120,16 @@ void Mineimator::TextBox::keyEvent()
         
         if (keyDown(GLFW_KEY_LEFT_SHIFT))
         {
-            if (editCaret.index > clickCaret.index) {
+            if (editCaret.indexWrap > clickCaret.indexWrap) {
                 selectStartCaret = clickCaret;
                 selectEndCaret = editCaret;
-            } else {
+            }
+            else {
                 selectEndCaret = clickCaret;
                 selectStartCaret = editCaret;
             }
-        } else {
+        }
+        else {
             clickCaret = selectStartCaret = selectEndCaret = editCaret;
         }
         return;
@@ -134,8 +138,8 @@ void Mineimator::TextBox::keyEvent()
     // Select all
     if (keyDown(GLFW_KEY_LEFT_CONTROL) && keyPressed(GLFW_KEY_A))
     {
-        selectStartCaret = caretAtIndex(0);
-        selectEndCaret = caretAtIndex(text.size());
+        selectStartCaret = caretAtIndexWrap(0);
+        selectEndCaret = caretAtIndexWrap(textWrap.size());
         editCaret = selectEndCaret;
         return;
     }
@@ -153,7 +157,8 @@ void Mineimator::TextBox::keyEvent()
     }
     
     // Paste
-    else if (keyDown(GLFW_KEY_LEFT_CONTROL) && keyPressed(GLFW_KEY_V)) {
+    else if (keyDown(GLFW_KEY_LEFT_CONTROL) && keyPressed(GLFW_KEY_V))
+    {
         insert = 
             stringReplace(
                 glfwGetClipboardString(app->mainWindow->handle),
@@ -165,7 +170,8 @@ void Mineimator::TextBox::keyEvent()
     // Copy/Cut
     else if (keyDown(GLFW_KEY_LEFT_CONTROL) && (keyPressed(GLFW_KEY_C) || keyPressed(GLFW_KEY_X)))
     {
-        if (selectEndCaret.index != selectStartCaret.index) {
+        if (selectEndCaret.index != selectStartCaret.index)
+        {
             glfwSetClipboardString(
                 app->mainWindow->handle,
                 &stringReplace(
@@ -189,28 +195,32 @@ void Mineimator::TextBox::keyEvent()
     if (selectEndCaret.index != selectStartCaret.index)
     {
         text = stringErase(text, selectStartCaret.index, selectEndCaret.index - selectStartCaret.index);
-        editCaret = clickCaret = selectEndCaret = selectStartCaret;
+        updateWrap();
+        editCaret = selectStartCaret;
     }
     
     // Delete previous character
     else if (keyPressed(GLFW_KEY_BACKSPACE) && editCaret.index > 0)
     {
         text = stringErase(text, editCaret.index - 1, 1);
+        updateWrap();
         editCaret = caretAtIndex(editCaret.index - 1);
     }
     
     // Delete next character
     else if (keyPressed(GLFW_KEY_DELETE) && editCaret.index < text.size()) {
         text = stringErase(text, editCaret.index, 1);
+        updateWrap();
     }
     
     // Insert text
     if (insert != "") {
         text = stringInsert(text, insert, editCaret.index);
+        updateWrap();
         editCaret = caretAtIndex(editCaret.index + insert.length());
     }
     
-    selectStartCaret = selectEndCaret = editCaret;
+    selectStartCaret = selectEndCaret = clickCaret = editCaret;
 }
 
 
@@ -220,19 +230,21 @@ Mineimator::TextBox::Caret Mineimator::TextBox::caretAtPos(ScreenPos pos)
     ScreenPos charPos = { 0, 0 };
     Caret caret;
     caret.index = 0;
+    caret.indexWrap = 0;
     caret.pos = { 0, 0 };
 
-    for (uint c = 0; c < text.size(); c++)
+    for (uint wc = 0, c = 0; wc < textWrap.size(); wc++)
     {
-        uchar curChar = text[c];
+        uchar curChar = textWrap[wc];
         int width = 0;
 
-        if (curChar == '\n') {
+        if (curChar == '\n' || curChar == '\r') {
             charPos.x = 0;
             charPos.y += font->height * LINE_SPACE;
         }
         else {
             if (curChar < font->start || curChar > font->end) {
+                c++;
                 continue;
             }
             width = font->chars[curChar].advanceX;
@@ -240,10 +252,15 @@ Mineimator::TextBox::Caret Mineimator::TextBox::caretAtPos(ScreenPos pos)
 
         if (pos.x >= charPos.x + width / 2 && pos.y >= charPos.y) {
             caret.index = c + 1;
+            caret.indexWrap = wc + 1;
             caret.pos = { charPos.x + width , charPos.y };
         }
 
         charPos.x += width;
+        
+        if (curChar != '\r') {
+            c++;
+        }
     }
     
     return caret;
@@ -255,13 +272,19 @@ Mineimator::TextBox::Caret Mineimator::TextBox::caretAtIndex(int index)
     Font* font = app->drawingFont;
     Caret caret;
     caret.index = index;
+    caret.indexWrap = 0;
     caret.pos = { 0, 0 };
 
-    for (uint c = 0; c < index; c++)
+    for (uint wc = 0, c = 0; c < index; wc++)
     {
-        uchar curChar = text[c];
-
-        if (curChar == '\n') {
+        uchar curChar = textWrap[wc];
+        caret.indexWrap = wc;
+        
+        if (curChar != '\r') {
+            c++;
+        }
+        
+        if (curChar == '\n' || curChar == '\r') {
             caret.pos.x = 0;
             caret.pos.y += font->height * LINE_SPACE;
             continue;
@@ -278,50 +301,119 @@ Mineimator::TextBox::Caret Mineimator::TextBox::caretAtIndex(int index)
 }
 
 
-int Mineimator::TextBox::findNextWord(int index)
+Mineimator::TextBox::Caret Mineimator::TextBox::caretAtIndexWrap(int indexWrap)
 {
-    while (index < text.length())
+    Font* font = app->drawingFont;
+    Caret caret;
+    caret.index = 0;
+    caret.indexWrap = indexWrap;
+    caret.pos = { 0, 0 };
+
+    for (uint wc = 0; wc < indexWrap; wc++)
     {
-        char currentChar = text[index];
-        if (currentChar == '\n' ||
-            currentChar == ' ' ||
-            currentChar == '(' ||
-            currentChar == ')' ||
-            currentChar == '[' ||
-            currentChar == ']' ||
-            currentChar == '+' ||
-            currentChar == '/' ||
-            currentChar == '\\')
-        {
-            if (currentChar == ' ') {
-                index++;
-            }
-            return index;
+        uchar curChar = textWrap[wc];
+
+        if (curChar != '\r') {
+            caret.index++;
         }
-        index++;
+        
+        if (curChar == '\n' || curChar == '\r') {
+            caret.pos.x = 0;
+            caret.pos.y += font->height * LINE_SPACE;
+            continue;
+        }
+        
+        if (curChar < font->start || curChar > font->end) {
+            continue;
+        }
+        
+        caret.pos.x += font->chars[curChar].advanceX;
     }
-    return index;
+    
+    return caret;
 }
 
 
-int Mineimator::TextBox::findPreviousWord(int index)
+bool isWordSeparator(char c)
 {
-    while (index > 0)
+    return (c == '\n' ||
+            c == ' ' ||
+            c == '(' ||
+            c == ')' ||
+            c == '[' ||
+            c == ']' ||
+            c == '+' ||
+            c == '/' ||
+            c == '\\');
+}
+
+
+int Mineimator::TextBox::findNextWord(int indexWrap)
+{
+    while (indexWrap < textWrap.length())
     {
-        char currentChar = text[index - 1];
-        if (currentChar == '\n' ||
-            currentChar == ' ' ||
-            currentChar == '(' ||
-            currentChar == ')' ||
-            currentChar == '[' ||
-            currentChar == ']' ||
-            currentChar == '+' ||
-            currentChar == '/' ||
-            currentChar == '\\')
-        {
-            return index;
+        if (isWordSeparator(textWrap[indexWrap])) {
+            if (textWrap[indexWrap] == ' ') {
+                indexWrap++;
+            }
+            return indexWrap;
         }
-        index--;
+        indexWrap++;
     }
-    return index;
+    return indexWrap;
+}
+
+
+int Mineimator::TextBox::findPreviousWord(int indexWrap)
+{
+    while (indexWrap > 0)
+    {
+        if (isWordSeparator(textWrap[indexWrap - 1])) {
+            return indexWrap;
+        }
+        indexWrap--;
+    }
+    return indexWrap;
+}
+
+
+void Mineimator::TextBox::updateWrap()
+{
+    Font* font = app->drawingFont;
+    int x = 0, sepIndex = -1;
+    
+    textWrap = text;
+    
+    for (uint wc = 0; wc < textWrap.length(); wc++)
+    {
+        uchar curChar = textWrap[wc];
+
+        if (curChar == '\n') {
+            x = 0;
+            continue;
+        }
+        
+        if (curChar < font->start || curChar > font->end) {
+            continue;
+        }
+        
+        x += font->chars[curChar].advanceX;
+        
+        if (x >= box.width)
+        {
+            if (sepIndex < 0) {
+                sepIndex = wc;
+            }
+            
+            textWrap = stringInsert(textWrap, "\r", sepIndex);
+            x = stringGetWidth(stringSubstring(textWrap, sepIndex + 1, (wc - sepIndex) + 1));
+            
+            sepIndex = -1;
+            wc++;
+        }
+        
+        if (isWordSeparator(curChar)) {
+            sepIndex = wc + 1;
+        }
+    }
 }
