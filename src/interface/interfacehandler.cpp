@@ -50,3 +50,15 @@ void Mineimator::InterfaceHandler::setParent(Element* parent)
     this->parent = parent;
     workspace->setParent(this);
 }
+
+
+void Mineimator::setInterfaceState(InterfaceState state)
+{
+    app->interfaceHandler->state = state;
+}
+
+
+Mineimator::InterfaceState Mineimator::getInterfaceState()
+{
+    return app->interfaceHandler->state;
+}

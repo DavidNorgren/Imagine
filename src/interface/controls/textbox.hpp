@@ -18,14 +18,12 @@ namespace Mineimator
             };
             
             TextBox(string name,
-                    bool singleLine = true,
-                    int height = 20,
+                    int lines = 1,
                     std::function<bool()> visibleFunc = TRUE_FUNC)
             {
                 this->name = name;
-                this->singleLine = singleLine;
+                this->lines = lines;
                 this->visibleFunc = visibleFunc;
-                this->height = height;
                 editCaret.index = -1;
             }
             
@@ -39,9 +37,8 @@ namespace Mineimator
             
         private:
             Caret editCaret, clickCaret, selectStartCaret, selectEndCaret;
-            bool singleLine;
+            int lines;
             string text = "", textWrap = "";
-            int height;
             
             void updateWrap();
             Caret caretAtPos(ScreenPos pos);

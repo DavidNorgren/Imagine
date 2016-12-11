@@ -36,4 +36,9 @@ namespace Mineimator
             Element* focus = nullptr;
     };
 
+
+    void setInterfaceState(InterfaceState state);
+
+    InterfaceState getInterfaceState();
+
 }
