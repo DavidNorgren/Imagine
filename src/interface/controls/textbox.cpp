@@ -6,7 +6,7 @@
 
 void Mineimator::TextBox::update()
 {
-    box.height = height;
+    box.height = stringGetHeight(" ") * lines;
 }
 
 
@@ -33,7 +33,7 @@ void Mineimator::TextBox::draw()
 
 void Mineimator::TextBox::mouseEvent()
 {
-    mouseOn = (mouseInBox(box) && app->interfaceHandler->state == IDLE);
+    mouseOn = (mouseInBox(box) && getInterfaceState() == IDLE);
     pressed = false;
     
     if (mouseOn)
@@ -41,8 +41,7 @@ void Mineimator::TextBox::mouseEvent()
         if (mouseLeftPressed())
         {
             focus();
-            
-            app->interfaceHandler->state = TEXTBOX_SELECT;
+            setInterfaceState(TEXTBOX_SELECT);
             
             if (!keyDown(GLFW_KEY_LEFT_SHIFT))
             {
@@ -54,7 +53,7 @@ void Mineimator::TextBox::mouseEvent()
                     selectStartCaret = caretAtIndexWrap(findPreviousWord(clickCaret.indexWrap));
                     selectEndCaret = caretAtIndexWrap(findNextWord(clickCaret.indexWrap));
                     editCaret = selectEndCaret;
-                    app->interfaceHandler->state = IDLE;
+                    setInterfaceState(IDLE);
                 }
             }
         }
@@ -62,7 +61,7 @@ void Mineimator::TextBox::mouseEvent()
         mouseSetCursor(BEAM);
     }
     
-    if (isFocused() && app->interfaceHandler->state == TEXTBOX_SELECT)
+    if (isFocused() && getInterfaceState() == TEXTBOX_SELECT)
     {
         editCaret = caretAtPos(mousePos() - box.pos);
         
@@ -76,7 +75,7 @@ void Mineimator::TextBox::mouseEvent()
         }
         
         if (!mouseLeftDown()) {
-            app->interfaceHandler->state = IDLE;
+            setInterfaceState(IDLE);
             mouseClear();
         }
         

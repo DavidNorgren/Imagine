@@ -28,40 +28,76 @@ void Mineimator::Workspace::update()
         panel->size_visible = (panel->tabs.size() > 0) ? panel->size : 0;
     }
     
+    // Left top
     panels[Panel::LEFT_TOP]->box = {
         pos,
         panels[Panel::LEFT_TOP]->size_visible,
         box.height
     };
+    panels[Panel::LEFT_TOP]->resizeBox = {
+        panels[Panel::LEFT_TOP]->pos + (ScreenPos){ panels[Panel::LEFT_TOP]->box.width - PANEL_RESIZE_BOX_SIZE, 0 },
+        PANEL_RESIZE_BOX_SIZE,
+        panels[Panel::LEFT_TOP]->box.height
+    };
     
+    // Right top
     panels[Panel::RIGHT_TOP]->box = {
         { pos.x + box.width - panels[Panel::RIGHT_TOP]->size_visible, pos.y },
         panels[Panel::RIGHT_TOP]->size_visible,
         box.height
     };
+    panels[Panel::RIGHT_TOP]->resizeBox = {
+        panels[Panel::RIGHT_TOP]->pos,
+        PANEL_RESIZE_BOX_SIZE,
+        panels[Panel::RIGHT_TOP]->box.height
+    };
     
+    // Bottom
     panels[Panel::BOTTOM]->box = {
         { pos.x + panels[Panel::LEFT_TOP]->size_visible, pos.y + box.height - panels[Panel::BOTTOM]->size_visible },
         box.width - panels[Panel::LEFT_TOP]->size_visible - panels[Panel::RIGHT_TOP]->size_visible,
         panels[Panel::BOTTOM]->size_visible
     };
+    panels[Panel::BOTTOM]->resizeBox = {
+        panels[Panel::BOTTOM]->pos,
+        panels[Panel::BOTTOM]->box.width,
+        PANEL_RESIZE_BOX_SIZE
+    };
     
+    // Top
     panels[Panel::TOP]->box = {
         { pos.x + panels[Panel::LEFT_TOP]->size_visible, pos.y },
         box.width - panels[Panel::LEFT_TOP]->size_visible - panels[Panel::RIGHT_TOP]->size_visible,
         panels[Panel::TOP]->size_visible
     };
+    panels[Panel::TOP]->resizeBox = {
+        panels[Panel::TOP]->pos + (ScreenPos){ 0, panels[Panel::TOP]->box.height - PANEL_RESIZE_BOX_SIZE },
+        panels[Panel::TOP]->box.width,
+        PANEL_RESIZE_BOX_SIZE
+    };
     
+    // Left bottom
     panels[Panel::LEFT_BOTTOM]->box = {
         { pos.x + panels[Panel::LEFT_TOP]->size_visible, pos.y + panels[Panel::TOP]->size_visible },
         panels[Panel::LEFT_BOTTOM]->size_visible,
         box.height - panels[Panel::TOP]->size_visible - panels[Panel::BOTTOM]->size_visible
     };
+    panels[Panel::LEFT_BOTTOM]->resizeBox = {
+        panels[Panel::LEFT_BOTTOM]->pos + (ScreenPos){ panels[Panel::LEFT_BOTTOM]->box.width - PANEL_RESIZE_BOX_SIZE, 0 },
+        PANEL_RESIZE_BOX_SIZE,
+        panels[Panel::LEFT_BOTTOM]->box.height
+    };
     
+    // Right bottom
     panels[Panel::RIGHT_BOTTOM]->box = {
         { pos.x + box.width - panels[Panel::RIGHT_TOP]->size_visible - panels[Panel::RIGHT_BOTTOM]->size_visible, pos.y + panels[Panel::TOP]->size_visible },
         panels[Panel::RIGHT_BOTTOM]->size_visible,
         box.height - panels[Panel::TOP]->size_visible - panels[Panel::BOTTOM]->size_visible
+    };
+    panels[Panel::RIGHT_BOTTOM]->resizeBox = {
+        panels[Panel::RIGHT_BOTTOM]->pos,
+        PANEL_RESIZE_BOX_SIZE,
+        panels[Panel::RIGHT_BOTTOM]->box.height
     };
     
     // Update panel elements

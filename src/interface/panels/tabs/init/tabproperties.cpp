@@ -9,13 +9,11 @@ void Mineimator::Workspace::initTabProperties()
         {
             new TabSection("Section A", true,
                 {
-                    new CheckBox("Test"),
-                    new CheckBox("TEST"),
                     new LabeledGroup(
                         {
                             new TextBox("Name"),
                             new TextBox("Author"),
-                            new TextBox("Description")
+                            new TextBox("Description", 4)
                         }
                     )
                 }
@@ -24,7 +22,7 @@ void Mineimator::Workspace::initTabProperties()
                 {
                     new Row(
                         {
-                            new CheckBox("HelloHello!"),
+                            new CheckBox("Hello"),
                             new CheckBox("Hello2"),
                             new CheckBox("Hello3"),
                             new CheckBox("Hello4"),

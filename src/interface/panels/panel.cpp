@@ -8,14 +8,22 @@ void Mineimator::Panel::update()
         return;
     }
 
-    // Tab selector
+    // Get total width of every tab
     int selectTotalWidth = 0;
-    for (Tab* tab : tabs) {
-        tab->selectBox.width = stringGetWidth(tab->name) + 20;
+    for (Tab* tab : tabs)
+    {
+        // The selected tab is displayed with bold text
+        if (selectedTab == tab) {
+            tab->selectBox.width = app->drawingFontBold->stringGetWidth(tab->name) + 20;
+        } else {
+            tab->selectBox.width = stringGetWidth(tab->name) + 20;
+        }
         tab->selectBox.height = TAB_SELECT_HEIGHT;
         selectTotalWidth += tab->selectBox.width;
     }
     
+    // Set the positions of each tab selector, and
+    // shrink them if necessary to fit everything
     ScreenPos selectPos = pos;
     for (Tab* tab : tabs)
     {
@@ -26,9 +34,10 @@ void Mineimator::Panel::update()
         selectPos.x += tab->selectBox.width;
     }
 
+    // Define the content box and update the selected tab
     selectedTab->box = {
         { pos.x + TAB_CONTENT_PADDING, pos.y + TAB_SELECT_HEIGHT + TAB_CONTENT_PADDING }, 
-        box.width - TAB_CONTENT_PADDING * 2,
+        box.width  - TAB_CONTENT_PADDING * 2,
         box.height - TAB_SELECT_HEIGHT - TAB_CONTENT_PADDING * 2 
     };
     selectedTab->update();
@@ -52,10 +61,14 @@ void Mineimator::Panel::draw()
         if (selectedTab == tab) {
             drawBox(tab->selectBox, SETTING_INTERFACE_COLOR_MAIN);
         }
-        drawTextAligned(tab->name, tab->selectBox.pos + (ScreenPos){ tab->selectBox.width / 2, tab->selectBox.height / 2 }, CENTER, MIDDLE, SETTING_INTERFACE_COLOR_TEXT);
+        drawTextAligned(tab->name,
+                        tab->selectBox.pos + (ScreenPos){ tab->selectBox.width / 2, tab->selectBox.height / 2 },
+                        CENTER, MIDDLE,
+                        SETTING_INTERFACE_COLOR_TEXT,
+                        (selectedTab == tab ? app->drawingFontBold : app->drawingFont ));
     }
     
-    // TODO: Tab selector
+    // Draw current tab contents
     selectedTab->draw();
 }
 
@@ -65,15 +78,22 @@ void Mineimator::Panel::mouseEvent()
     if (!selectedTab) {
         return;
     }
-    
-    for (Tab* tab : tabs)
+
+    if (mouseInBox(resizeBox))
     {
-        if (selectedTab != tab && mouseInBox(tab->selectBox))
+        mouseSetCursor((location == BOTTOM || location == TOP) ? NSRESIZE : WERESIZE);
+    }
+    else
+    {
+        for (Tab* tab : tabs)
         {
-            mouseSetCursor(HANDPOINT);
-            if (mouseLeftPressed()) {
-                selectedTab = tab;
-                update();
+            if (selectedTab != tab && mouseInBox(tab->selectBox))
+            {
+                mouseSetCursor(HANDPOINT);
+                if (mouseLeftPressed()) {
+                    selectedTab = tab;
+                    update();
+                }
             }
         }
     }

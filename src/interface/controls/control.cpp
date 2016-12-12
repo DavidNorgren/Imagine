@@ -1,16 +1,16 @@
 #include "interface/controls/control.hpp"
-#include "mineimatorapp.hpp"
+#include "interface/interfacehandler.hpp"
 
 
 void Mineimator::Control::mouseEvent()
 {
-    mouseOn = (mouseInBox(box) && app->interfaceHandler->state == IDLE);
+    mouseOn = (mouseInBox(box) && getInterfaceState() == IDLE);
     pressed = false;
     
     if (mouseOn)
     {
         if (mouseLeftPressed()) {
-            app->interfaceHandler->focus = this;
+            focus();
         }
         if (mouseLeftDown()) {
             pressed = true;

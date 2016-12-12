@@ -48,6 +48,7 @@ namespace Mineimator
 
             Location location;
             int size, size_visible;
+            ScreenArea resizeBox;
 
             Tab* selectedTab;
             std::vector<Tab*> tabs;
