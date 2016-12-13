@@ -3,6 +3,24 @@
 #include "base.hpp"
 using namespace Base;
 
+#define PANEL_START_WIDTH       380
+#define PANEL_START_HEIGHT      210
+#define PANEL_MIN_WIDTH         300
+#define PANEL_MIN_HEIGHT        50
+#define PANEL_RESIZE_BOX_SIZE   5
+
+#define TAB_CONTENT_PADDING 8
+#define TAB_SELECT_HEIGHT 30
+
+#define TRUE_FUNC   []() { return true; }
+#define FALSE_FUNC  []() { return false; }
+
+#define CONTROL_MARGIN_RIGHT   2
+#define CONTROL_MARGIN_LEFT    2
+#define CONTROL_MARGIN_BOTTOM  8
+
+#define TEXTBOX_BOX_PADDING    4
+
 #define SETTING_INTERFACE_COLOR_MAIN                Color(200, 200, 200)
 #define SETTING_INTERFACE_COLOR_BACKGROUND          SETTING_INTERFACE_COLOR_MAIN * Color(0.9f)
 #define SETTING_INTERFACE_COLOR_TEXT                Color(10, 10, 10)

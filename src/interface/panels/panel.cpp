@@ -79,22 +79,60 @@ void Mineimator::Panel::mouseEvent()
         return;
     }
 
-    if (mouseInBox(resizeBox))
+    if (getInterfaceState() == IDLE)
     {
-        mouseSetCursor((location == BOTTOM || location == TOP) ? NSRESIZE : WERESIZE);
-    }
-    else
-    {
-        for (Tab* tab : tabs)
+        if (mouseInBox(resizeBox))
         {
-            if (selectedTab != tab && mouseInBox(tab->selectBox))
+            // The mouse is near the edge for resizing
+            mouseSetCursor((location == BOTTOM || location == TOP) ? NSRESIZE : WERESIZE);
+            if (mouseLeftPressed())
             {
-                mouseSetCursor(HANDPOINT);
-                if (mouseLeftPressed()) {
-                    selectedTab = tab;
-                    update();
+                focus();
+                setInterfaceState(PANEL_RESIZE);
+                sizeResize = sizeVisible;
+            }
+        }
+        else
+        {
+            // Tab selector
+            for (Tab* tab : tabs)
+            {
+                if (selectedTab != tab && mouseInBox(tab->selectBox))
+                {
+                    mouseSetCursor(HANDPOINT);
+                    if (mouseLeftPressed()) {
+                        selectedTab = tab;
+                        update();
+                    }
                 }
             }
+        }
+    }
+
+    // Panel is being resized 
+    else if (isFocused() && getInterfaceState() == PANEL_RESIZE)
+    {
+        if (location == RIGHT_TOP || location == RIGHT_BOTTOM) {
+            mouseSetCursor(WERESIZE);
+            size = max(PANEL_MIN_WIDTH, sizeResize + (mousePosClick().x - mousePos().x));
+        }
+        else if (location == LEFT_TOP || location == LEFT_BOTTOM) {
+            mouseSetCursor(WERESIZE);
+            size = max(PANEL_MIN_WIDTH, sizeResize + (mousePos().x - mousePosClick().x));
+        }
+        else if (location == TOP) {
+            mouseSetCursor(NSRESIZE);
+            size = max(PANEL_MIN_HEIGHT, sizeResize + (mousePos().y - mousePosClick().y));
+        }
+        else if (location == BOTTOM) {
+            mouseSetCursor(NSRESIZE);
+            size = max(PANEL_MIN_HEIGHT, sizeResize + (mousePosClick().y - mousePos().y));
+        }
+        parent->update();
+
+        // Stop resizing
+        if (!mouseLeftDown()) {
+            setInterfaceState(IDLE);
         }
     }
     

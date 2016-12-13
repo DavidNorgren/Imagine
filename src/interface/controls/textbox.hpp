@@ -2,8 +2,6 @@
 
 #include "interface/controls/control.hpp"
 
-#define TEXTBOX_BOX_PADDING    5
-
 
 namespace Mineimator
 {
@@ -24,7 +22,7 @@ namespace Mineimator
                 this->name = name;
                 this->lines = lines;
                 this->visibleFunc = visibleFunc;
-                editCaret.index = -1;
+                editCaret.index = selectStartCaret.index = selectEndCaret.index = 0;
             }
             
             /* Element methods. */

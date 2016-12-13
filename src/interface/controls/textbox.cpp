@@ -6,7 +6,11 @@
 
 void Mineimator::TextBox::update()
 {
-    box.height = stringGetHeight(" ") * lines;
+    box.height = stringGetHeight(" ") * lines + TEXTBOX_BOX_PADDING * 2;
+    updateWrap();
+    editCaret = caretAtIndex(editCaret.index);
+    selectStartCaret = caretAtIndex(selectStartCaret.index);
+    selectEndCaret = caretAtIndex(selectEndCaret.index);
 }
 
 
@@ -19,14 +23,18 @@ void Mineimator::TextBox::draw()
     if (isFocused())
     {
         drawTextSelected(
-            textWrap, box.pos, selectStartCaret.indexWrap, selectEndCaret.indexWrap,
+            textWrap, box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING }, selectStartCaret.indexWrap, selectEndCaret.indexWrap,
             SETTING_INTERFACE_COLOR_BOXES_TEXT, SETTING_INTERFACE_COLOR_HIGHLIGHT, SETTING_INTERFACE_COLOR_HIGHLIGHT_TEXT
         );
         drawBox(box, Color(0, 0, 255, 200), true);
-        drawLine(box.pos + editCaret.pos, box.pos + editCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") }, SETTING_INTERFACE_COLOR_BOXES_TEXT, 2);
+        drawLine(
+            box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING } + editCaret.pos,
+            box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING } + editCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") },
+            SETTING_INTERFACE_COLOR_BOXES_TEXT, 2
+        );
     }
     else {
-        drawText(textWrap, box.pos, SETTING_INTERFACE_COLOR_BOXES_TEXT);
+        drawText(textWrap, box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING }, SETTING_INTERFACE_COLOR_BOXES_TEXT);
     }
 }
 
@@ -216,6 +224,7 @@ void Mineimator::TextBox::keyEvent()
     else if (keyPressed(GLFW_KEY_DELETE) && editCaret.index < text.size()) {
         text = stringErase(text, editCaret.index, 1);
         updateWrap();
+        editCaret = caretAtIndex(editCaret.index);
     }
     
     // Insert text
@@ -280,13 +289,16 @@ Mineimator::TextBox::Caret Mineimator::TextBox::caretAtIndex(int index)
     caret.indexWrap = 0;
     caret.pos = { 0, 0 };
 
-    for (uint wc = 0, c = 0; c < index; wc++)
+    uint wc, c;
+    for (wc = 0, c = 0; wc < textWrap.size(); wc++)
     {
         uchar curChar = textWrap[wc];
-        caret.indexWrap = wc;
-        
+
         if (curChar != '\r') {
             c++;
+            if (c > index) {
+                break;
+            }
         }
         
         if (curChar == '\n' || curChar == '\r') {
@@ -301,6 +313,8 @@ Mineimator::TextBox::Caret Mineimator::TextBox::caretAtIndex(int index)
         
         caret.pos.x += font->chars[curChar].advanceX;
     }
+
+    caret.indexWrap = wc;
     
     return caret;
 }
@@ -412,7 +426,7 @@ void Mineimator::TextBox::updateWrap()
         
         x += font->chars[curChar].advanceX;
         
-        if (x >= box.width)
+        if (x >= box.width - TEXTBOX_BOX_PADDING * 2)
         {
             if (sepIndex < 0) {
                 sepIndex = wc;

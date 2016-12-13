@@ -17,7 +17,7 @@ Mineimator::Workspace::Workspace()
     initTabSettings();
     panels[Panel::RIGHT_TOP]->addTab(tabProperties);
     panels[Panel::BOTTOM]->addTab(tabTimeline);
-    panels[Panel::RIGHT_TOP]->addTab(tabSettings);
+    panels[Panel::TOP]->addTab(tabSettings);
 }
 
 
@@ -25,13 +25,36 @@ void Mineimator::Workspace::update()
 {    
     // Set panel locations and sizes
     for (Panel* panel : panels) {
-        panel->size_visible = (panel->tabs.size() > 0) ? panel->size : 0;
+        panel->sizeVisible = (panel->tabs.size() > 0) ? panel->size : 0;
     }
+
+    // Stop overlapping
+    panels[Panel::LEFT_BOTTOM]->sizeVisible -= max(0, 
+        panels[Panel::LEFT_TOP]->sizeVisible +
+        panels[Panel::LEFT_BOTTOM]->sizeVisible +
+        panels[Panel::RIGHT_BOTTOM]->sizeVisible +
+        panels[Panel::RIGHT_TOP]->sizeVisible - box.width
+    );
+    panels[Panel::LEFT_TOP]->sizeVisible -= max(0,
+        panels[Panel::LEFT_TOP]->sizeVisible +
+        panels[Panel::RIGHT_TOP]->sizeVisible +
+        panels[Panel::RIGHT_BOTTOM]->sizeVisible - box.width
+    );
+    panels[Panel::BOTTOM]->sizeVisible -= max(0,
+        panels[Panel::TOP]->sizeVisible +
+        panels[Panel::BOTTOM]->sizeVisible - box.height
+    );
+
+    // Set max size
+    panels[Panel::LEFT_TOP]->sizeVisible = min(panels[Panel::LEFT_TOP]->sizeVisible, box.width);
+    panels[Panel::RIGHT_TOP]->sizeVisible = min(panels[Panel::RIGHT_TOP]->sizeVisible, box.width);
+    panels[Panel::TOP]->sizeVisible = min(panels[Panel::TOP]->sizeVisible, box.height);
+    panels[Panel::BOTTOM]->sizeVisible = min(panels[Panel::BOTTOM]->sizeVisible, box.height);
     
     // Left top
     panels[Panel::LEFT_TOP]->box = {
         pos,
-        panels[Panel::LEFT_TOP]->size_visible,
+        panels[Panel::LEFT_TOP]->sizeVisible,
         box.height
     };
     panels[Panel::LEFT_TOP]->resizeBox = {
@@ -42,8 +65,8 @@ void Mineimator::Workspace::update()
     
     // Right top
     panels[Panel::RIGHT_TOP]->box = {
-        { pos.x + box.width - panels[Panel::RIGHT_TOP]->size_visible, pos.y },
-        panels[Panel::RIGHT_TOP]->size_visible,
+        { pos.x + box.width - panels[Panel::RIGHT_TOP]->sizeVisible, pos.y },
+        panels[Panel::RIGHT_TOP]->sizeVisible,
         box.height
     };
     panels[Panel::RIGHT_TOP]->resizeBox = {
@@ -54,9 +77,9 @@ void Mineimator::Workspace::update()
     
     // Bottom
     panels[Panel::BOTTOM]->box = {
-        { pos.x + panels[Panel::LEFT_TOP]->size_visible, pos.y + box.height - panels[Panel::BOTTOM]->size_visible },
-        box.width - panels[Panel::LEFT_TOP]->size_visible - panels[Panel::RIGHT_TOP]->size_visible,
-        panels[Panel::BOTTOM]->size_visible
+        { pos.x + panels[Panel::LEFT_TOP]->sizeVisible, pos.y + box.height - panels[Panel::BOTTOM]->sizeVisible },
+        box.width - panels[Panel::LEFT_TOP]->sizeVisible - panels[Panel::RIGHT_TOP]->sizeVisible,
+        panels[Panel::BOTTOM]->sizeVisible
     };
     panels[Panel::BOTTOM]->resizeBox = {
         panels[Panel::BOTTOM]->pos,
@@ -66,9 +89,9 @@ void Mineimator::Workspace::update()
     
     // Top
     panels[Panel::TOP]->box = {
-        { pos.x + panels[Panel::LEFT_TOP]->size_visible, pos.y },
-        box.width - panels[Panel::LEFT_TOP]->size_visible - panels[Panel::RIGHT_TOP]->size_visible,
-        panels[Panel::TOP]->size_visible
+        { pos.x + panels[Panel::LEFT_TOP]->sizeVisible, pos.y },
+        box.width - panels[Panel::LEFT_TOP]->sizeVisible - panels[Panel::RIGHT_TOP]->sizeVisible,
+        panels[Panel::TOP]->sizeVisible
     };
     panels[Panel::TOP]->resizeBox = {
         panels[Panel::TOP]->pos + (ScreenPos){ 0, panels[Panel::TOP]->box.height - PANEL_RESIZE_BOX_SIZE },
@@ -78,9 +101,9 @@ void Mineimator::Workspace::update()
     
     // Left bottom
     panels[Panel::LEFT_BOTTOM]->box = {
-        { pos.x + panels[Panel::LEFT_TOP]->size_visible, pos.y + panels[Panel::TOP]->size_visible },
-        panels[Panel::LEFT_BOTTOM]->size_visible,
-        box.height - panels[Panel::TOP]->size_visible - panels[Panel::BOTTOM]->size_visible
+        { pos.x + panels[Panel::LEFT_TOP]->sizeVisible, pos.y + panels[Panel::TOP]->sizeVisible },
+        panels[Panel::LEFT_BOTTOM]->sizeVisible,
+        box.height - panels[Panel::TOP]->sizeVisible - panels[Panel::BOTTOM]->sizeVisible
     };
     panels[Panel::LEFT_BOTTOM]->resizeBox = {
         panels[Panel::LEFT_BOTTOM]->pos + (ScreenPos){ panels[Panel::LEFT_BOTTOM]->box.width - PANEL_RESIZE_BOX_SIZE, 0 },
@@ -90,9 +113,9 @@ void Mineimator::Workspace::update()
     
     // Right bottom
     panels[Panel::RIGHT_BOTTOM]->box = {
-        { pos.x + box.width - panels[Panel::RIGHT_TOP]->size_visible - panels[Panel::RIGHT_BOTTOM]->size_visible, pos.y + panels[Panel::TOP]->size_visible },
-        panels[Panel::RIGHT_BOTTOM]->size_visible,
-        box.height - panels[Panel::TOP]->size_visible - panels[Panel::BOTTOM]->size_visible
+        { pos.x + box.width - panels[Panel::RIGHT_TOP]->sizeVisible - panels[Panel::RIGHT_BOTTOM]->sizeVisible, pos.y + panels[Panel::TOP]->sizeVisible },
+        panels[Panel::RIGHT_BOTTOM]->sizeVisible,
+        box.height - panels[Panel::TOP]->sizeVisible - panels[Panel::BOTTOM]->sizeVisible
     };
     panels[Panel::RIGHT_BOTTOM]->resizeBox = {
         panels[Panel::RIGHT_BOTTOM]->pos,

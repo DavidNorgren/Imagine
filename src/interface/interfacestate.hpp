@@ -7,7 +7,8 @@ namespace Mineimator
     enum InterfaceState
     {
         IDLE,
-        TEXTBOX_SELECT
+        TEXTBOX_SELECT,
+        PANEL_RESIZE
     };
     
 }

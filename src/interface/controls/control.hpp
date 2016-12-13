@@ -11,14 +11,6 @@ using namespace Base;
 #include "settings/settings.hpp"
 
 
-#define TRUE_FUNC   []() { return true; }
-#define FALSE_FUNC  []() { return false; }
-
-#define CONTROL_MARGIN_RIGHT   2
-#define CONTROL_MARGIN_LEFT    2
-#define CONTROL_MARGIN_BOTTOM  8
-
-
 namespace Mineimator
 {
 

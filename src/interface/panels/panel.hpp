@@ -7,9 +7,6 @@ using namespace Base;
 #include "interface/controls/button.hpp"
 #include "interface/panels/tabs/tab.hpp"
 
-#define TAB_CONTENT_PADDING 8
-#define TAB_SELECT_HEIGHT 30
-
 
 namespace Mineimator
 {
@@ -47,7 +44,7 @@ namespace Mineimator
             void setParent(Element* parent) override;
 
             Location location;
-            int size, size_visible;
+            int size, sizeVisible, sizeResize;
             ScreenArea resizeBox;
 
             Tab* selectedTab;

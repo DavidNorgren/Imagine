@@ -32,7 +32,7 @@ void Mineimator::InterfaceHandler::draw()
 
 void Mineimator::InterfaceHandler::mouseEvent()
 {
-    if (app->interfaceHandler->state == IDLE && mouseLeftPressed()) {
+    if (getInterfaceState() == IDLE && mouseLeftPressed()) {
         focus = nullptr;
     }
     workspace->mouseEvent();
