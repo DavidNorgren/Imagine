@@ -34,7 +34,10 @@ namespace Mineimator
             }
             
             /* Adds an initial tab to the panel. */
-            void addTab(Tab* tab);
+            void addTab(Tab* tab, int index = -1);
+
+            /* Removes a given tab from the panel. */
+            void removeTab(Tab* tab);
 
             /* Element methods. */
             void update() override;

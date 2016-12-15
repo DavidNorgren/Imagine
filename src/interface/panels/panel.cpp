@@ -14,7 +14,7 @@ void Mineimator::Panel::update()
     {
         // The selected tab is displayed with bold text
         if (selectedTab == tab) {
-            tab->selectBox.width = app->drawingFontBold->stringGetWidth(tab->name) + 20;
+            tab->selectBox.width = stringGetWidth(tab->name, BOLD) + 20;
         } else {
             tab->selectBox.width = stringGetWidth(tab->name) + 20;
         }
@@ -36,9 +36,8 @@ void Mineimator::Panel::update()
 
     // Define the content box and update the selected tab
     selectedTab->box = {
-        { pos.x + TAB_CONTENT_PADDING, pos.y + TAB_SELECT_HEIGHT + TAB_CONTENT_PADDING }, 
-        box.width  - TAB_CONTENT_PADDING * 2,
-        box.height - TAB_SELECT_HEIGHT - TAB_CONTENT_PADDING * 2 
+        { pos.x, pos.y + TAB_SELECT_HEIGHT },
+        box.width, box.height - TAB_SELECT_HEIGHT
     };
     selectedTab->update();
 }
@@ -51,21 +50,16 @@ void Mineimator::Panel::draw()
         return;
     }
     
-    // Draw the background of the panel
-    drawBox(box, SETTING_INTERFACE_COLOR_MAIN);
-    
     // Tab selector
     drawBox({ box.pos, box.width, TAB_SELECT_HEIGHT }, SETTING_INTERFACE_COLOR_BACKGROUND);
     for (Tab* tab : tabs)
     {
-        if (selectedTab == tab) {
-            drawBox(tab->selectBox, SETTING_INTERFACE_COLOR_MAIN);
+        if (selectedTab != tab) {
+            drawTextAligned(tab->name,
+                            tab->selectBox.pos + (ScreenPos){ tab->selectBox.width / 2, tab->selectBox.height / 2 },
+                            CENTER, MIDDLE,
+                            SETTING_INTERFACE_COLOR_TEXT);
         }
-        drawTextAligned(tab->name,
-                        tab->selectBox.pos + (ScreenPos){ tab->selectBox.width / 2, tab->selectBox.height / 2 },
-                        CENTER, MIDDLE,
-                        SETTING_INTERFACE_COLOR_TEXT,
-                        (selectedTab == tab ? app->drawingFontBold : app->drawingFont ));
     }
     
     // Draw current tab contents
@@ -79,7 +73,7 @@ void Mineimator::Panel::mouseEvent()
         return;
     }
 
-    if (getInterfaceState() == IDLE)
+    if (isInterfaceState(IDLE))
     {
         if (mouseInBox(resizeBox))
         {
@@ -97,12 +91,16 @@ void Mineimator::Panel::mouseEvent()
             // Tab selector
             for (Tab* tab : tabs)
             {
-                if (selectedTab != tab && mouseInBox(tab->selectBox))
+                if (mouseInBox(tab->selectBox))
                 {
-                    mouseSetCursor(HANDPOINT);
-                    if (mouseLeftPressed()) {
-                        selectedTab = tab;
-                        update();
+                    // Select the tab if clicked
+                    if (selectedTab != tab)
+                    {
+                        mouseSetCursor(HANDPOINT);
+                        if (mouseLeftPressed()) {
+                            selectedTab = tab;
+                            update();
+                        }
                     }
                 }
             }
@@ -110,7 +108,7 @@ void Mineimator::Panel::mouseEvent()
     }
 
     // Panel is being resized 
-    else if (isFocused() && getInterfaceState() == PANEL_RESIZE)
+    else if (isFocused() && isInterfaceState(PANEL_RESIZE))
     {
         if (location == RIGHT_TOP || location == RIGHT_BOTTOM) {
             mouseSetCursor(WERESIZE);
@@ -159,10 +157,33 @@ void Mineimator::Panel::setParent(Element* parent)
 }
 
 
-void Mineimator::Panel::addTab(Tab* tab)
+void Mineimator::Panel::addTab(Tab* tab, int index)
 {
-    tabs.push_back(tab);
+    // Append
+    if (index < 0) {
+        index = tabs.size();
+    }
+
+    tabs.insert(tabs.begin() + index, tab);
     if (tab->visible) {
         selectedTab = tab;
+    }
+}
+
+
+void Mineimator::Panel::removeTab(Tab* tab)
+{
+    // Remove from list
+    std::vector<Tab*>::iterator i = std::find(tabs.begin(), tabs.end(), tab);
+    tabs.erase(i);
+
+    // If this was the selected tab, select the next or previous one
+    if (selectedTab == tab)
+    {
+        if (tabs.size() > 0) {
+            selectedTab = (i == tabs.end()) ? *(std::prev(i)) : *i;
+        } else {
+            selectedTab = nullptr;
+        }
     }
 }

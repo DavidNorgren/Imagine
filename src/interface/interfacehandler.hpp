@@ -37,8 +37,13 @@ namespace Mineimator
     };
 
 
+    // Get/set interface state
     void setInterfaceState(InterfaceState state);
-
     InterfaceState getInterfaceState();
+    bool isInterfaceState(InterfaceState state);
 
+    // Get/set focused elements
+    void setFocused(Element* element);
+    Element* getFocused();
+    bool isFocused(Element* element);
 }

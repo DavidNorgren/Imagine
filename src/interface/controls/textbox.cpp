@@ -17,7 +17,7 @@ void Mineimator::TextBox::update()
 void Mineimator::TextBox::draw()
 {
     // Box
-    drawBox(box, SETTING_INTERFACE_COLOR_BOXES);
+    drawBoxEdges(box, SETTING_INTERFACE_COLOR_BOXES, IMAGE_ROUNDED_2);
     
     // Text
     if (isFocused())
@@ -41,7 +41,7 @@ void Mineimator::TextBox::draw()
 
 void Mineimator::TextBox::mouseEvent()
 {
-    mouseOn = (mouseInBox(box) && getInterfaceState() == IDLE);
+    mouseOn = (mouseInBox(box) && isInterfaceState(IDLE));
     pressed = false;
     
     if (mouseOn)
@@ -69,7 +69,7 @@ void Mineimator::TextBox::mouseEvent()
         mouseSetCursor(BEAM);
     }
     
-    if (isFocused() && getInterfaceState() == TEXTBOX_SELECT)
+    if (isFocused() && isInterfaceState(TEXTBOX_SELECT))
     {
         editCaret = caretAtPos(mousePos() - box.pos);
         

@@ -35,6 +35,7 @@ namespace Mineimator
             bool visible, closeable;
             std::vector<TabSection*> sections;
             ScreenArea selectBox;
+            ScreenPos moveStartPos, moveSelectStartPos;
     };
     
 }

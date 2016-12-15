@@ -1,3 +1,4 @@
+#include "interface/interfacehandler.hpp"
 #include "interface/workspace.hpp"
 
 
@@ -17,7 +18,7 @@ Mineimator::Workspace::Workspace()
     initTabSettings();
     panels[Panel::RIGHT_TOP]->addTab(tabProperties);
     panels[Panel::BOTTOM]->addTab(tabTimeline);
-    panels[Panel::TOP]->addTab(tabSettings);
+    panels[Panel::RIGHT_TOP]->addTab(tabSettings);
 }
 
 
@@ -45,7 +46,7 @@ void Mineimator::Workspace::update()
         panels[Panel::BOTTOM]->sizeVisible - box.height
     );
 
-    // Set max size
+    // Set minimum size
     panels[Panel::LEFT_TOP]->sizeVisible = min(panels[Panel::LEFT_TOP]->sizeVisible, box.width);
     panels[Panel::RIGHT_TOP]->sizeVisible = min(panels[Panel::RIGHT_TOP]->sizeVisible, box.width);
     panels[Panel::TOP]->sizeVisible = min(panels[Panel::TOP]->sizeVisible, box.height);
@@ -127,6 +128,9 @@ void Mineimator::Workspace::update()
     for (Panel* panel : panels) {
         panel->update();
     }
+    if (isInterfaceState(TAB_MOVE)) {
+        getFocused()->update();
+    }
 }
 
 
@@ -136,6 +140,11 @@ void Mineimator::Workspace::draw()
     for (Panel* panel : panels) {
         panel->draw();
     }
+
+    // Draw the moved tab on top
+    if (isInterfaceState(TAB_MOVE)) {
+        getFocused()->draw();
+    }
 }
 
 
@@ -143,6 +152,30 @@ void Mineimator::Workspace::mouseEvent()
 {
     for (Panel* panel : panels) {
         panel->mouseEvent();
+    }
+
+    // Currently moved tab
+    if (isInterfaceState(TAB_MOVE))
+    {
+        Tab* tab = (Tab*)getFocused();
+        tab->mouseEvent();
+
+        // Find the new location
+        Panel* newPanel;
+        int newTabIndex = -1;
+        for (Panel* panel : panels) {
+            if (mouseInBox(panel->box)) {
+                newPanel = panel;
+            }
+        }
+
+        // Let it go!
+        if (!mouseLeftDown()) {
+            newPanel->addTab(tab, newTabIndex);
+            newPanel->update();
+            tab->setParent(newPanel);
+            setInterfaceState(IDLE);
+        }
     }
 }
 
