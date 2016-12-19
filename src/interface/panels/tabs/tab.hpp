@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base.hpp"
-using namespace Base;
 
 #include "interface/panels/tabs/tabsection.hpp"
 

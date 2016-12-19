@@ -54,7 +54,8 @@ void Mineimator::Panel::draw()
     drawBox({ box.pos, box.width, TAB_SELECT_HEIGHT }, SETTING_INTERFACE_COLOR_BACKGROUND);
     for (Tab* tab : tabs)
     {
-        if (selectedTab != tab) {
+        if (selectedTab != tab)
+        {
             drawTextAligned(tab->name,
                             tab->selectBox.pos + (ScreenPos){ tab->selectBox.width / 2, tab->selectBox.height / 2 },
                             CENTER, MIDDLE,
@@ -174,7 +175,7 @@ void Mineimator::Panel::addTab(Tab* tab, int index)
 void Mineimator::Panel::removeTab(Tab* tab)
 {
     // Remove from list
-    std::vector<Tab*>::iterator i = std::find(tabs.begin(), tabs.end(), tab);
+    auto i = std::find(tabs.begin(), tabs.end(), tab);
     tabs.erase(i);
 
     // If this was the selected tab, select the next or previous one

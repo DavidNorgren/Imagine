@@ -1,7 +1,6 @@
 #pragma once
 
-#include "base.hpp"
-using namespace Base;
+#include <base.hpp>
 
 
 namespace Mineimator

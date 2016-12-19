@@ -4,6 +4,8 @@
 namespace Mineimator
 {
     
+    /* Defines the possible actions by the user. Only
+       one of these can be processed at once. */
     enum InterfaceState
     {
         IDLE,

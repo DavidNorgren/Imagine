@@ -78,7 +78,8 @@ void Mineimator::Workspace::update()
     
     // Bottom
     panels[Panel::BOTTOM]->box = {
-        { pos.x + panels[Panel::LEFT_TOP]->sizeVisible, pos.y + box.height - panels[Panel::BOTTOM]->sizeVisible },
+        { pos.x + panels[Panel::LEFT_TOP]->sizeVisible,
+          pos.y + box.height - panels[Panel::BOTTOM]->sizeVisible },
         box.width - panels[Panel::LEFT_TOP]->sizeVisible - panels[Panel::RIGHT_TOP]->sizeVisible,
         panels[Panel::BOTTOM]->sizeVisible
     };
@@ -102,7 +103,8 @@ void Mineimator::Workspace::update()
     
     // Left bottom
     panels[Panel::LEFT_BOTTOM]->box = {
-        { pos.x + panels[Panel::LEFT_TOP]->sizeVisible, pos.y + panels[Panel::TOP]->sizeVisible },
+        { pos.x + panels[Panel::LEFT_TOP]->sizeVisible,
+          pos.y + panels[Panel::TOP]->sizeVisible },
         panels[Panel::LEFT_BOTTOM]->sizeVisible,
         box.height - panels[Panel::TOP]->sizeVisible - panels[Panel::BOTTOM]->sizeVisible
     };
@@ -114,7 +116,8 @@ void Mineimator::Workspace::update()
     
     // Right bottom
     panels[Panel::RIGHT_BOTTOM]->box = {
-        { pos.x + box.width - panels[Panel::RIGHT_TOP]->sizeVisible - panels[Panel::RIGHT_BOTTOM]->sizeVisible, pos.y + panels[Panel::TOP]->sizeVisible },
+        { pos.x + box.width - panels[Panel::RIGHT_TOP]->sizeVisible - panels[Panel::RIGHT_BOTTOM]->sizeVisible,
+          pos.y + panels[Panel::TOP]->sizeVisible },
         panels[Panel::RIGHT_BOTTOM]->sizeVisible,
         box.height - panels[Panel::TOP]->sizeVisible - panels[Panel::BOTTOM]->sizeVisible
     };
@@ -131,15 +134,30 @@ void Mineimator::Workspace::update()
     if (isInterfaceState(TAB_MOVE)) {
         getFocused()->update();
     }
+
+    // Update view area
+    viewArea = {
+        { pos.x + panels[Panel::LEFT_TOP]->sizeVisible + panels[Panel::LEFT_BOTTOM]->sizeVisible,
+          pos.y + panels[Panel::TOP]->sizeVisible },
+        box.width - (panels[Panel::LEFT_TOP]->sizeVisible + panels[Panel::LEFT_BOTTOM]->sizeVisible +
+                     panels[Panel::RIGHT_TOP]->sizeVisible + panels[Panel::RIGHT_BOTTOM]->sizeVisible),
+        box.height - (panels[Panel::TOP]->sizeVisible + panels[Panel::BOTTOM]->sizeVisible)
+    };
 }
 
 
 void Mineimator::Workspace::draw()
 {
+    // Draw each view
+    //viewMain->draw();
+    //viewSecond->draw();
+
     // Draw each panel
     for (Panel* panel : panels) {
         panel->draw();
     }
+
+    drawBox(viewArea, Color(0.1f));
 
     // Draw the moved tab on top
     if (isInterfaceState(TAB_MOVE)) {
@@ -161,18 +179,89 @@ void Mineimator::Workspace::mouseEvent()
         tab->mouseEvent();
 
         // Find the new location
-        Panel* newPanel;
+        Panel* newPanel = nullptr;
         int newTabIndex = -1;
+
+        // Mouse is on existing panel
         for (Panel* panel : panels) {
             if (mouseInBox(panel->box)) {
                 newPanel = panel;
             }
         }
 
-        // Let it go!
+        // Find an empty panel to drop the tab into
+        if (!newPanel)
+        {
+            float moveTopHeight = viewArea.height,
+                  moveBottomHeight = viewArea.height,
+                  moveLeftTopWidth = viewArea.width,
+                  moveRightTopWidth = viewArea.width,
+                  moveLeftBottomWidth = viewArea.width;
+
+            // Adjust top panel check size
+            if (!panels[Panel::LEFT_TOP]->sizeVisible || !panels[Panel::LEFT_BOTTOM]->sizeVisible
+             || !panels[Panel::RIGHT_TOP]->sizeVisible || !panels[Panel::RIGHT_BOTTOM]->sizeVisible) {
+                 moveTopHeight *= 0.33;
+            }
+            else if (!panels[Panel::BOTTOM]->sizeVisible) {
+                moveTopHeight *= 0.5;
+            }
+
+            // Adjust bottom panel check size
+            if (!panels[Panel::LEFT_TOP]->sizeVisible || !panels[Panel::LEFT_BOTTOM]->sizeVisible
+             || !panels[Panel::RIGHT_TOP]->sizeVisible || !panels[Panel::RIGHT_BOTTOM]->sizeVisible) {
+                 moveBottomHeight *= 0.33;
+            }
+            else if (!panels[Panel::BOTTOM]->sizeVisible) {
+                moveBottomHeight *= 0.5;
+            }
+
+            // Adjust top left panel check size
+            if (!panels[Panel::RIGHT_TOP]->sizeVisible || !panels[Panel::RIGHT_BOTTOM]->sizeVisible) {
+                moveLeftTopWidth *= 0.5f;
+            }
+            if (!panels[Panel::LEFT_BOTTOM]->sizeVisible) {
+                moveLeftTopWidth *= 0.5f;
+            }
+
+            // Adjust top right panel check size
+            if (!panels[Panel::LEFT_TOP]->sizeVisible || !panels[Panel::LEFT_BOTTOM]->sizeVisible) {
+                moveRightTopWidth *= 0.5f;
+            }
+            if (!panels[Panel::RIGHT_BOTTOM]->sizeVisible) {
+                moveRightTopWidth *= 0.5f;
+            }
+
+            // Adjust left bottom panel check size
+            if (!panels[Panel::RIGHT_TOP]->sizeVisible || !panels[Panel::RIGHT_BOTTOM]->sizeVisible) {
+                moveLeftBottomWidth *= 0.5f;
+            }
+
+            // Find panel
+            if (mousePos().y <= viewArea.pos.y + moveTopHeight && !panels[Panel::TOP]->sizeVisible) {
+                newPanel = panels[Panel::TOP];
+            }
+            else if (mousePos().y >= viewArea.pos.y + viewArea.height - moveBottomHeight && !panels[Panel::BOTTOM]->sizeVisible) {
+                newPanel = panels[Panel::BOTTOM];
+            }
+            else if (mousePos().x <= viewArea.pos.x + moveLeftTopWidth && !panels[Panel::LEFT_TOP]->sizeVisible) {
+                newPanel = panels[Panel::LEFT_TOP];
+            }
+            else if (mousePos().x <= viewArea.pos.x + moveLeftBottomWidth && !panels[Panel::LEFT_BOTTOM]->sizeVisible) {
+                newPanel = panels[Panel::LEFT_BOTTOM];
+            }
+            else if (mousePos().x >= viewArea.pos.x + viewArea.width - moveRightTopWidth && !panels[Panel::RIGHT_TOP]->sizeVisible) {
+                newPanel = panels[Panel::RIGHT_TOP];
+            }
+            else {
+                newPanel = panels[Panel::RIGHT_BOTTOM];
+            }
+        }
+
+        // Drop tab into a new panel
         if (!mouseLeftDown()) {
             newPanel->addTab(tab, newTabIndex);
-            newPanel->update();
+            update();
             tab->setParent(newPanel);
             setInterfaceState(IDLE);
         }

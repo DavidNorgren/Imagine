@@ -1,9 +1,7 @@
 #pragma once
 
 #include <functional>
-
-#include "base.hpp"
-using namespace Base;
+#include <base.hpp>
 
 #include "interface/element.hpp"
 #include "interface/controls/icons.hpp"

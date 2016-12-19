@@ -1,7 +1,6 @@
 #pragma once
 
-#include "base.hpp"
-using namespace Base;
+#include <base.hpp>
 
 #include "interface/interfacehandler.hpp"
 #include "project/projecthandler.hpp"
@@ -18,8 +17,7 @@ namespace Mineimator
             /* Program startup. */
             App();
 
-            //// Handlers ////
-
+            /* Handlers. */
             InterfaceHandler* interfaceHandler;
             ProjectHandler* projectHandler;
 

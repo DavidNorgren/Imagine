@@ -7,6 +7,7 @@
 #include "interface/controls/textbox.hpp"
 #include "interface/controls/labeledgroup.hpp"
 #include "interface/panels/panel.hpp"
+#include "interface/views/view.hpp"
 
 
 namespace Mineimator
@@ -30,10 +31,16 @@ namespace Mineimator
             void initTabTimeline();
             void initTabSettings();
 
+            /* Panels */
             std::vector<Panel*> panels;
             Tab* tabProperties;
             Tab* tabTimeline;
             Tab* tabSettings;
+
+            /* Views */
+            ScreenArea viewArea;
+            View* viewMain;
+            View* viewSecond;
     };
 
 }

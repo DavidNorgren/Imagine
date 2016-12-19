@@ -22,10 +22,6 @@ void Mineimator::InterfaceHandler::update()
 void Mineimator::InterfaceHandler::draw()
 {
     drawBegin();
-    
-    // Dummy background
-    drawBox(box, { 0.1f });
-    
     workspace->draw();
 }
 
@@ -63,20 +59,24 @@ Mineimator::InterfaceState Mineimator::getInterfaceState()
     return app->interfaceHandler->state;
 }
 
+
 bool Mineimator::isInterfaceState(InterfaceState state)
 {
     return getInterfaceState() == state;
 }
+
 
 void Mineimator::setFocused(Element* element)
 {
     app->interfaceHandler->focus = element;
 }
 
+
 Mineimator::Element* Mineimator::getFocused()
 {
     return app->interfaceHandler->focus;
 }
+
 
 bool Mineimator::isFocused(Element* element)
 {

@@ -1,8 +1,5 @@
 #pragma once
 
-#include "base.hpp"
-using namespace Base;
-
 #include "interface/element.hpp"
 #include "interface/controls/button.hpp"
 #include "interface/panels/tabs/tab.hpp"
@@ -48,6 +45,7 @@ namespace Mineimator
 
             Location location;
             int size, sizeVisible, sizeResize;
+            float moveGlow = 0.f;
             ScreenArea resizeBox;
 
             Tab* selectedTab;

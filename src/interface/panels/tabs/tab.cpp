@@ -17,6 +17,11 @@ void Mineimator::Tab::update()
 
 void Mineimator::Tab::draw()
 {
+    // Transparent if moved
+    if (isFocused() && isInterfaceState(TAB_MOVE)) {
+        setDrawingAlpha(0.75f);
+    }
+
     // Background
     drawBox(box, SETTING_INTERFACE_COLOR_MAIN);
     drawBox(selectBox, SETTING_INTERFACE_COLOR_MAIN);
@@ -31,6 +36,11 @@ void Mineimator::Tab::draw()
     // Sections
     for (TabSection* section : sections) {
         section->draw();
+    }
+
+    // Reset alpha
+    if (isFocused() && isInterfaceState(TAB_MOVE)) {
+        setDrawingAlpha(1.f);
     }
 }
 
@@ -55,7 +65,7 @@ void Mineimator::Tab::mouseEvent()
             moveStartPos = pos;
             moveSelectStartPos = selectBox.pos;
             ((Panel*)parent)->removeTab(this);
-            parent->update();
+            parent->parent->update();
         }
 
         // Cursor was released, return to idle state

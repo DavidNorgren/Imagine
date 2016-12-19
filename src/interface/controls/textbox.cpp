@@ -402,15 +402,14 @@ int Mineimator::TextBox::findPreviousWord(int indexWrap)
 
 void Mineimator::TextBox::updateWrap()
 {
-    // Insert word wrapping symbols between words or characters
-    // to keep the text inside the box. They are treated as
-    // new lines when rendering, however uses a different value.
-    
     Font* font = app->drawingFont;
     int x = 0, sepIndex = -1;
     
     textWrap = text;
     
+    // Insert word wrapping symbols between words or characters
+    // to keep the text inside the box. They are treated as
+    // new lines when rendering, however uses a different value.
     for (uint wc = 0; wc < textWrap.length(); wc++)
     {
         uchar curChar = textWrap[wc];

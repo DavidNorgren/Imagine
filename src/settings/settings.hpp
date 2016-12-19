@@ -1,7 +1,6 @@
 #pragma once
 
-#include "base.hpp"
-using namespace Base;
+#include <base.hpp>
 
 #define PANEL_START_WIDTH       380
 #define PANEL_START_HEIGHT      210
