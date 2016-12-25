@@ -1,6 +1,7 @@
 #pragma once
 
 #include "interface/controls/control.hpp"
+#include "interface/controls/scrollbar.hpp"
 
 
 namespace Mineimator
@@ -16,20 +17,15 @@ namespace Mineimator
             };
             
             TextField(string name,
-                    int lines = 1,
-                    std::function<bool()> visibleFunc = TRUE_FUNC)
-            {
-                this->name = name;
-                this->lines = lines;
-                this->visibleFunc = visibleFunc;
-                editCaret.index = selectStartCaret.index = selectEndCaret.index = 0;
-            }
+                      int lines = 1,
+                      std::function<bool()> visibleFunc = TRUE_FUNC);
             
             /* Element methods. */
             void update() override;
             void draw() override;
             void mouseEvent() override;
             void keyEvent() override;
+            void setParent(Element* parent);
             
             void setText(string text);
             
@@ -40,6 +36,7 @@ namespace Mineimator
             string text = "", textWrap = "";
             ScreenArea textBox;
             ScreenPos textOffset = { 0, 0 };
+            ScrollBar* scrollBar = nullptr;
             
             void updateWrap();
             void updateOffset();

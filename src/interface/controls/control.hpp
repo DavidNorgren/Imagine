@@ -19,7 +19,6 @@ namespace Mineimator
             /* Element methods. */
             void mouseEvent() override;
             void keyEvent() override;
-            void setParent(Element* parent) override;
             
             string name;
             

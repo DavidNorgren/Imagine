@@ -3,6 +3,7 @@
 #include "base.hpp"
 
 #include "interface/panels/tabs/tabsection.hpp"
+#include "interface/controls/scrollbar.hpp"
 
 
 namespace Mineimator
@@ -18,6 +19,7 @@ namespace Mineimator
                 this->closeable = closeable;
                 this->visible = visible;
                 this->sections = sections;
+                scrollBar = new ScrollBar(ScrollBar::VERTICAL, &sectionsOffset.y);
             }
             
             void addSection(TabSection* section);
@@ -33,7 +35,9 @@ namespace Mineimator
             bool visible, closeable;
             std::vector<TabSection*> sections;
             ScreenArea selectBox, sectionsBox;
-            ScreenPos moveStartPos, moveSelectStartPos;
+            ScreenPos sectionsOffset = { 0, 0 }, moveStartPos, moveSelectStartPos;
+            int sectionsSize = 0;
+            ScrollBar* scrollBar;
     };
     
 }

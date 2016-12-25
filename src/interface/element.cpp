@@ -2,6 +2,12 @@
 #include "mineimatorapp.hpp"
 
 
+void Mineimator::Element::setParent(Element* parent)
+{
+    this->parent = parent;
+}
+
+
 void Mineimator::Element::focus()
 {
     app->interfaceHandler->focus = this;

@@ -4,20 +4,48 @@
 #include <iostream>
 
 
+Mineimator::TextField::TextField(string name, int lines, std::function<bool()> visibleFunc)
+{
+    this->name = name;
+    this->lines = lines;
+    this->visibleFunc = visibleFunc;
+    editCaret.index = selectStartCaret.index = selectEndCaret.index = 0;
+    if (lines > 1) {
+        scrollBar = new ScrollBar(ScrollBar::VERTICAL, &textOffset.y);
+    }
+}
+
+
 void Mineimator::TextField::update()
 {
+    /* Define text area */
     box.height = stringGetHeight(" ") * lines + TEXTBOX_BOX_PADDING * 2;
     textBox = {
-        box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING },
+        pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING },
         box.width - TEXTBOX_BOX_PADDING * 2,
         box.height - TEXTBOX_BOX_PADDING * 2
     };
 
+    /* Update scrollbar */
+    if (scrollBar) {
+        scrollBar->pos = pos + (ScreenPos){ box.width - SCROLLBAR_SIZE, 0 };
+        scrollBar->box.height = box.height;
+        scrollBar->visibleSize = textBox.height;
+        scrollBar->totalSize = stringGetHeight(textWrap);
+        scrollBar->update();
+        if (scrollBar->visible) {
+            textBox.width -= SCROLLBAR_SIZE;
+        }
+    }
+
+    /* Update wrapping and carets */
     updateWrap();
-    updateOffset();
     editCaret = caretAtIndex(editCaret.index);
     selectStartCaret = caretAtIndex(selectStartCaret.index);
     selectEndCaret = caretAtIndex(selectEndCaret.index);
+    if (lines == 1) {
+        textOffset.x = clamp(textOffset.x, 0, stringGetWidth(textWrap) - textBox.width);
+    }
 }
 
 
@@ -41,7 +69,7 @@ void Mineimator::TextField::draw()
         // Blinking caret
         if (fmodf(glfwGetTime() - clickTime, 1.f) < 0.5f)
         {
-            setDrawingArea(ScreenArea::intersection(drawingArea, { { textBox.pos.x - 1, textBox.pos.y }, textBox.width + 2, textBox.height }));
+            setDrawingArea(ScreenArea::intersection(drawingArea, box));
             drawLine(
                 textBox.pos - textOffset + editCaret.pos,
                 textBox.pos - textOffset + editCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") },
@@ -54,12 +82,23 @@ void Mineimator::TextField::draw()
     }
 
     setDrawingArea(drawingArea);
+    
+    if (scrollBar) {
+        scrollBar->draw();
+    }
 }
 
 
 void Mineimator::TextField::mouseEvent()
 {
     mouseOn = (parent->mouseOn && mouseInBox(box));
+
+    if (scrollBar) {
+        scrollBar->mouseEvent();
+        if (scrollBar->mouseOn) {
+            mouseOn = false;
+        }
+    }
     
     if (mouseOn)
     {
@@ -263,7 +302,20 @@ void Mineimator::TextField::keyEvent()
     }
     
     selectStartCaret = selectEndCaret = clickCaret = editCaret;
+    if (scrollBar) {
+        scrollBar->totalSize = stringGetHeight(textWrap);
+    }
+
     updateOffset();
+}
+
+
+void Mineimator::TextField::setParent(Element* parent)
+{
+    this->parent = parent;
+    if (scrollBar) {
+        scrollBar->setParent(this);
+    }
 }
 
 
@@ -501,5 +553,9 @@ void Mineimator::TextField::updateOffset()
             textOffset.x = editCaret.pos.x - textBox.width;
         }
         textOffset.x = clamp(textOffset.x, 0, stringGetWidth(textWrap) - textBox.width);
+    }
+
+    if (scrollBar) {
+        scrollBar->update();
     }
 }

@@ -28,9 +28,3 @@ void Mineimator::Control::keyEvent()
 {
     
 }
-
-
-void Mineimator::Control::setParent(Element* parent)
-{
-    this->parent = parent;
-}

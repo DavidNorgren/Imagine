@@ -12,7 +12,8 @@ namespace Mineimator
         TEXTBOX_SELECT,
         TAB_CLICK,
         TAB_MOVE,
-        PANEL_RESIZE
+        PANEL_RESIZE,
+        SCROLLBAR_MOVE
     };
     
 }

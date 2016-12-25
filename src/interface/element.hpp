@@ -20,8 +20,8 @@ namespace Mineimator
             virtual void mouseEvent() = 0;
             virtual void keyEvent() = 0;
 
-            /* Sets the parent element and continues with the child elements. */
-            virtual void setParent(Element* parent) = 0;
+            /* Sets the parent element and continues with the child elements (if any). */
+            virtual void setParent(Element* parent);
 
             /* Focus. */
             void focus();

@@ -9,14 +9,26 @@ void Mineimator::Tab::update()
         { pos.x + TAB_CONTENT_PADDING, pos.y + TAB_CONTENT_PADDING },
         box.width - TAB_CONTENT_PADDING * 2, box.height - TAB_CONTENT_PADDING * 2
     };
-    ScreenPos currentPos = sectionsBox.pos;
+
+    // Update scrollbar
+    scrollBar->pos = sectionsBox.pos + (ScreenPos) { sectionsBox.width - SCROLLBAR_SIZE, 0 };
+    scrollBar->box.height = sectionsBox.height;
+    scrollBar->visibleSize = sectionsBox.height;
+    scrollBar->totalSize = sectionsSize;
+    scrollBar->update();
+    if (scrollBar->visible) {
+        sectionsBox.width -= SCROLLBAR_SIZE + TAB_CONTENT_PADDING;
+    }
     
     // Update sections
+    ScreenPos currentPos = sectionsBox.pos - sectionsOffset;
+    sectionsSize = 0;
     for (TabSection* section : sections)
     {
-        section->box = { currentPos, box.width - TAB_CONTENT_PADDING * 2, 0 };
+        section->box = { currentPos, sectionsBox.width, 0 };
         section->update();
         currentPos.y += section->box.height;
+        sectionsSize += section->box.height;
     }
 }
 
@@ -45,6 +57,9 @@ void Mineimator::Tab::draw()
         section->draw();
     }
     resetDrawingArea();
+
+    // Scrollbar
+    scrollBar->draw();
 
     // Reset alpha
     if (isFocused() && isInterfaceState(TAB_MOVE)) {
@@ -95,6 +110,9 @@ void Mineimator::Tab::mouseEvent()
             section->mouseOn = (mouseOn && mouseInBox(sectionsBox));
             section->mouseEvent();
         }
+
+        // Scrollbar
+        scrollBar->mouseEvent();
     }
 }
 
@@ -113,4 +131,5 @@ void Mineimator::Tab::setParent(Element* parent)
     for (TabSection* section : sections) {
         section->setParent(this);
     }
+    scrollBar->setParent(this);
 }
