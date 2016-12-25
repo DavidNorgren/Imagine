@@ -12,7 +12,6 @@ namespace Mineimator
     class Tab : public Element
     {
         public:
-
             Tab(string name, bool visible, bool closeable, std::vector<TabSection*> sections)
             {
                 this->name = name;
@@ -33,7 +32,7 @@ namespace Mineimator
             string name;
             bool visible, closeable;
             std::vector<TabSection*> sections;
-            ScreenArea selectBox;
+            ScreenArea selectBox, sectionsBox;
             ScreenPos moveStartPos, moveSelectStartPos;
     };
     

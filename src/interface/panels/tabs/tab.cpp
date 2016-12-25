@@ -4,8 +4,14 @@
 
 void Mineimator::Tab::update()
 {
-    ScreenPos currentPos = { pos.x + TAB_CONTENT_PADDING, pos.y + TAB_CONTENT_PADDING };
+    // Define section area
+    sectionsBox = {
+        { pos.x + TAB_CONTENT_PADDING, pos.y + TAB_CONTENT_PADDING },
+        box.width - TAB_CONTENT_PADDING * 2, box.height - TAB_CONTENT_PADDING * 2
+    };
+    ScreenPos currentPos = sectionsBox.pos;
     
+    // Update sections
     for (TabSection* section : sections)
     {
         section->box = { currentPos, box.width - TAB_CONTENT_PADDING * 2, 0 };
@@ -34,9 +40,11 @@ void Mineimator::Tab::draw()
                     BOLD);
 
     // Sections
+    setDrawingArea(sectionsBox);
     for (TabSection* section : sections) {
         section->draw();
     }
+    resetDrawingArea();
 
     // Reset alpha
     if (isFocused() && isInterfaceState(TAB_MOVE)) {
@@ -60,7 +68,8 @@ void Mineimator::Tab::mouseEvent()
     if (isFocused() && isInterfaceState(TAB_CLICK))
     {
         // Cursor was moved while held down, start moving
-        if (ScreenPos::distance(mousePosClick(), mousePos()) > 10) {
+        if (ScreenPos::distance(mousePosClick(), mousePos()) > 10)
+        {
             setInterfaceState(TAB_MOVE);
             moveStartPos = pos;
             moveSelectStartPos = selectBox.pos;
@@ -73,16 +82,17 @@ void Mineimator::Tab::mouseEvent()
             setInterfaceState(IDLE);
         }
     }
-    else 
+    else
     {
         // Click title
-        if (mouseInBox(selectBox) && mouseLeftPressed()) {
+        if (isInterfaceState(IDLE) && mouseInBox(selectBox) && mouseLeftPressed()) {
             setInterfaceState(TAB_CLICK);
             focus();
         }
 
         // Proceed to sections
         for (TabSection* section : sections) {
+            section->mouseOn = (mouseOn && mouseInBox(sectionsBox));
             section->mouseEvent();
         }
     }

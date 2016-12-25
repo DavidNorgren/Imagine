@@ -23,7 +23,6 @@ namespace Mineimator
                         this->checkFunc();
                     }
                 };
-                checked = false;
             };
 
             /* Element methods. */
@@ -32,7 +31,7 @@ namespace Mineimator
 
         private:
             std::function<void()> checkFunc;
-            bool checked; // Todo: function to get check state
+            bool checked = false; // Todo: function to get check state
     };
     
 }

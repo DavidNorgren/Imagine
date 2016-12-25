@@ -17,7 +17,6 @@ namespace Mineimator
     class InterfaceHandler : public Element
     {
         public:
-
             /* Initializes the interface. */
             InterfaceHandler();
 

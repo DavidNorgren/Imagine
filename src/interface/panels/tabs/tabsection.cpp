@@ -8,7 +8,7 @@ Mineimator::TabSection::TabSection(string name, bool open, std::vector<Control*>
     this->openButton = new IconButton(
         name,
         true,
-        [this](){ this->open = !this->open; this->parent->update();},
+        [this]() { this->open = !this->open; this->parent->update(); },
         NO_ICON,
         16,
         16,
@@ -85,6 +85,7 @@ void Mineimator::TabSection::keyEvent()
 void Mineimator::TabSection::setParent(Element* parent)
 {
     this->parent = parent;
+    openButton->setParent(this);
     for (Control* control : controls) {
         control->setParent(this);
     }

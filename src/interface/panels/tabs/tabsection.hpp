@@ -13,7 +13,6 @@ namespace Mineimator
     class TabSection : public Element
     {
         public:
-
             TabSection(string name, bool open, std::vector<Control*> controls);
             
             /* Element methods. */

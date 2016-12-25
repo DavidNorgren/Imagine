@@ -7,7 +7,7 @@ namespace Mineimator
 {
     
     /* Editable textbox. */
-    class TextBox : public Control
+    class TextField : public Control
     {
         public:
             struct Caret {
@@ -15,7 +15,7 @@ namespace Mineimator
                 int index, indexWrap;
             };
             
-            TextBox(string name,
+            TextField(string name,
                     int lines = 1,
                     std::function<bool()> visibleFunc = TRUE_FUNC)
             {
@@ -35,10 +35,14 @@ namespace Mineimator
             
         private:
             Caret editCaret, clickCaret, selectStartCaret, selectEndCaret;
+            double clickTime;
             int lines;
             string text = "", textWrap = "";
+            ScreenArea textBox;
+            ScreenPos textOffset = { 0, 0 };
             
             void updateWrap();
+            void updateOffset();
             Caret caretAtPos(ScreenPos pos);
             Caret caretAtIndex(int index);
             Caret caretAtIndexWrap(int indexWrap);

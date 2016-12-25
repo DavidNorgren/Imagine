@@ -33,6 +33,8 @@ void Mineimator::LabeledGroup::draw()
 
 void Mineimator::LabeledGroup::mouseEvent()
 {
+    mouseOn = (parent->mouseOn && mouseInBox(box));
+
     for (Control* control : controls) {
         control->mouseEvent();
     }

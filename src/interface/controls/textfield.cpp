@@ -1,59 +1,77 @@
-#include "interface/controls/textbox.hpp"
+#include "interface/controls/textfield.hpp"
 #include "mineimatorapp.hpp"
 
 #include <iostream>
 
 
-void Mineimator::TextBox::update()
+void Mineimator::TextField::update()
 {
     box.height = stringGetHeight(" ") * lines + TEXTBOX_BOX_PADDING * 2;
+    textBox = {
+        box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING },
+        box.width - TEXTBOX_BOX_PADDING * 2,
+        box.height - TEXTBOX_BOX_PADDING * 2
+    };
+
     updateWrap();
+    updateOffset();
     editCaret = caretAtIndex(editCaret.index);
     selectStartCaret = caretAtIndex(selectStartCaret.index);
     selectEndCaret = caretAtIndex(selectEndCaret.index);
 }
 
 
-void Mineimator::TextBox::draw()
+void Mineimator::TextField::draw()
 {
+    ScreenArea drawingArea = getDrawingArea();
+
     // Box
     drawBoxEdges(box, SETTING_INTERFACE_COLOR_BOXES, IMAGE_ROUNDED_2);
     
     // Text
+    setDrawingArea(ScreenArea::intersection(drawingArea, textBox));
     if (isFocused())
     {
         drawTextSelected(
-            textWrap, box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING }, selectStartCaret.indexWrap, selectEndCaret.indexWrap,
+            textWrap, textBox.pos - textOffset, selectStartCaret.indexWrap, selectEndCaret.indexWrap,
             SETTING_INTERFACE_COLOR_BOXES_TEXT, SETTING_INTERFACE_COLOR_HIGHLIGHT, SETTING_INTERFACE_COLOR_HIGHLIGHT_TEXT
         );
         drawBox(box, Color(0, 0, 255, 200), true);
-        drawLine(
-            box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING } + editCaret.pos,
-            box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING } + editCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") },
-            SETTING_INTERFACE_COLOR_BOXES_TEXT, 2
-        );
+
+        // Blinking caret
+        if (fmodf(glfwGetTime() - clickTime, 1.f) < 0.5f)
+        {
+            setDrawingArea(ScreenArea::intersection(drawingArea, { { textBox.pos.x - 1, textBox.pos.y }, textBox.width + 2, textBox.height }));
+            drawLine(
+                textBox.pos - textOffset + editCaret.pos,
+                textBox.pos - textOffset + editCaret.pos + (ScreenPos){ 0, stringGetHeight(" ") },
+                SETTING_INTERFACE_COLOR_BOXES_TEXT, 2
+            );
+        }
     }
     else {
-        drawText(textWrap, box.pos + (ScreenPos){ TEXTBOX_BOX_PADDING, TEXTBOX_BOX_PADDING }, SETTING_INTERFACE_COLOR_BOXES_TEXT);
+        drawText(textWrap, textBox.pos - textOffset, SETTING_INTERFACE_COLOR_BOXES_TEXT);
     }
+
+    setDrawingArea(drawingArea);
 }
 
 
-void Mineimator::TextBox::mouseEvent()
+void Mineimator::TextField::mouseEvent()
 {
-    mouseOn = (mouseInBox(box) && isInterfaceState(IDLE));
-    pressed = false;
+    mouseOn = (parent->mouseOn && mouseInBox(box));
     
     if (mouseOn)
     {
         if (mouseLeftPressed())
         {
+            clickTime = glfwGetTime();
             focus();
             setInterfaceState(TEXTBOX_SELECT);
             
             if (!keyDown(GLFW_KEY_LEFT_SHIFT))
             {
-                clickCaret = caretAtPos(mousePos() - box.pos);
+                clickCaret = caretAtPos(mousePos() - box.pos + textOffset);
                 
                 // Word select
                 if (editCaret.indexWrap == clickCaret.indexWrap && selectStartCaret.indexWrap == selectEndCaret.indexWrap && mouseLastClickDuration() < 1.f)
@@ -71,7 +89,9 @@ void Mineimator::TextBox::mouseEvent()
     
     if (isFocused() && isInterfaceState(TEXTBOX_SELECT))
     {
-        editCaret = caretAtPos(mousePos() - box.pos);
+        clickTime = glfwGetTime();
+        editCaret = caretAtPos(mousePos() - box.pos + textOffset);
+        updateOffset();
         
         if (editCaret.indexWrap < clickCaret.indexWrap) {
             selectStartCaret = editCaret;
@@ -92,11 +112,13 @@ void Mineimator::TextBox::mouseEvent()
 }
 
 
-void Mineimator::TextBox::keyEvent()
+void Mineimator::TextField::keyEvent()
 {
     if (!isFocused()) {
         return;
     }
+
+    clickTime = glfwGetTime();
     
     // Move caret
     bool moveRight = (keyPressed(GLFW_KEY_RIGHT) && editCaret.indexWrap < textWrap.size());
@@ -145,6 +167,8 @@ void Mineimator::TextBox::keyEvent()
         else {
             clickCaret = selectStartCaret = selectEndCaret = editCaret;
         }
+
+        updateOffset();
         return;
     }
     
@@ -154,6 +178,7 @@ void Mineimator::TextBox::keyEvent()
         selectStartCaret = caretAtIndexWrap(0);
         selectEndCaret = caretAtIndexWrap(textWrap.size());
         editCaret = selectEndCaret;
+        updateOffset();
         return;
     }
     
@@ -165,7 +190,7 @@ void Mineimator::TextBox::keyEvent()
     }
     
     // Linebreak
-    else if (keyPressed(GLFW_KEY_ENTER)) {
+    else if (keyPressed(GLFW_KEY_ENTER) && lines > 1) {
         insert = "\n";
     }
     
@@ -178,6 +203,9 @@ void Mineimator::TextBox::keyEvent()
                 "\r\n",
                 "\n"
             );
+        if (lines == 1) {
+            insert = stringReplace(insert, "\n", " ");
+        }
     }
     
     // Copy/Cut
@@ -235,10 +263,11 @@ void Mineimator::TextBox::keyEvent()
     }
     
     selectStartCaret = selectEndCaret = clickCaret = editCaret;
+    updateOffset();
 }
 
 
-Mineimator::TextBox::Caret Mineimator::TextBox::caretAtPos(ScreenPos pos)
+Mineimator::TextField::Caret Mineimator::TextField::caretAtPos(ScreenPos pos)
 {
     Font* font = app->drawingFont;
     ScreenPos charPos = { 0, 0 };
@@ -281,7 +310,7 @@ Mineimator::TextBox::Caret Mineimator::TextBox::caretAtPos(ScreenPos pos)
 }
 
 
-Mineimator::TextBox::Caret Mineimator::TextBox::caretAtIndex(int index)
+Mineimator::TextField::Caret Mineimator::TextField::caretAtIndex(int index)
 {
     Font* font = app->drawingFont;
     Caret caret;
@@ -320,7 +349,7 @@ Mineimator::TextBox::Caret Mineimator::TextBox::caretAtIndex(int index)
 }
 
 
-Mineimator::TextBox::Caret Mineimator::TextBox::caretAtIndexWrap(int indexWrap)
+Mineimator::TextField::Caret Mineimator::TextField::caretAtIndexWrap(int indexWrap)
 {
     Font* font = app->drawingFont;
     Caret caret;
@@ -367,7 +396,7 @@ bool isWordSeparator(char c)
 }
 
 
-int Mineimator::TextBox::findNextWord(int indexWrap)
+int Mineimator::TextField::findNextWord(int indexWrap)
 {
     // Look to the right until a word separating character
     // is found, or the string ends.
@@ -385,7 +414,7 @@ int Mineimator::TextBox::findNextWord(int indexWrap)
 }
 
 
-int Mineimator::TextBox::findPreviousWord(int indexWrap)
+int Mineimator::TextField::findPreviousWord(int indexWrap)
 {
     // Look to the left until a word separating character
     // is found, or the beginning of the string is reached.
@@ -400,13 +429,17 @@ int Mineimator::TextBox::findPreviousWord(int indexWrap)
 }
 
 
-void Mineimator::TextBox::updateWrap()
+void Mineimator::TextField::updateWrap()
 {
     Font* font = app->drawingFont;
     int x = 0, sepIndex = -1;
     
     textWrap = text;
-    
+
+    if (lines == 1) {
+        return;
+    }
+
     // Insert word wrapping symbols between words or characters
     // to keep the text inside the box. They are treated as
     // new lines when rendering, however uses a different value.
@@ -425,7 +458,7 @@ void Mineimator::TextBox::updateWrap()
         
         x += font->chars[curChar].advanceX;
         
-        if (x >= box.width - TEXTBOX_BOX_PADDING * 2)
+        if (x >= textBox.width)
         {
             if (sepIndex < 0) {
                 sepIndex = wc;
@@ -441,5 +474,32 @@ void Mineimator::TextBox::updateWrap()
         if (isWordSeparator(curChar)) {
             sepIndex = wc + 1;
         }
+    }
+}
+
+
+void Mineimator::TextField::updateOffset()
+{
+    // Moves the view to the editing marker
+
+    if (lines > 1)
+    {
+        if (editCaret.pos.y < textOffset.y) {
+            textOffset.y = editCaret.pos.y;
+        }
+        if (editCaret.pos.y + stringGetHeight(" ") >= textOffset.y + textBox.height) {
+            textOffset.y = editCaret.pos.y - textBox.height + stringGetHeight(" ");
+        }
+        textOffset.y = clamp(textOffset.y, 0, stringGetHeight(textWrap) - textBox.height);
+    }
+    else
+    {
+        if (editCaret.pos.x < textOffset.x) {
+            textOffset.x = editCaret.pos.x;
+        }
+        if (editCaret.pos.x >= textOffset.x + textBox.width) {
+            textOffset.x = editCaret.pos.x - textBox.width;
+        }
+        textOffset.x = clamp(textOffset.x, 0, stringGetWidth(textWrap) - textBox.width);
     }
 }

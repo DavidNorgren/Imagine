@@ -4,7 +4,7 @@
 #include "interface/controls/button.hpp"
 #include "interface/controls/checkbox.hpp"
 #include "interface/controls/row.hpp"
-#include "interface/controls/textbox.hpp"
+#include "interface/controls/textfield.hpp"
 #include "interface/controls/labeledgroup.hpp"
 #include "interface/panels/panel.hpp"
 #include "interface/views/view.hpp"
@@ -16,6 +16,15 @@ namespace Mineimator
     class Workspace : public Element
     {
         public:
+            enum PanelLocation
+            {
+                LEFT_BOTTOM,
+                RIGHT_BOTTOM,
+                BOTTOM,
+                TOP,
+                LEFT_TOP,
+                RIGHT_TOP
+            };
             
             Workspace();
             

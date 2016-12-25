@@ -11,9 +11,9 @@ void Mineimator::Workspace::initTabProperties()
                 {
                     new LabeledGroup(
                         {
-                            new TextBox("Name"),
-                            new TextBox("Author"),
-                            new TextBox("Description", 4)
+                            new TextField("Name"),
+                            new TextField("Author"),
+                            new TextField("Description", 4)
                         }
                     )
                 }

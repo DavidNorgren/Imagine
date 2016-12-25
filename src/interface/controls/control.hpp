@@ -15,7 +15,7 @@ namespace Mineimator
     /* Interface for all the controls. */
     class Control : public Element
     {
-        public:
+        public:                
             /* Element methods. */
             void mouseEvent() override;
             void keyEvent() override;
@@ -26,8 +26,7 @@ namespace Mineimator
         protected:
             std::function<void()> clickFunc = nullptr;
             std::function<bool()> visibleFunc;
-            bool mouseOn = false, pressed = false;
-            
+            bool pressed = false;
     };
     
 }

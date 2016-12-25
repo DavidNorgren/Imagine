@@ -10,7 +10,6 @@ namespace Mineimator
     class Element
     {
         public:
-
             /* Updates the positions and sizes of the child elements */
             virtual void update() = 0;
 
@@ -31,6 +30,9 @@ namespace Mineimator
             /* A box that represents the element's screen presence. */
             ScreenArea box;
             ScreenPos& pos = box.pos;
+            
+            /* Whether the mouse is on the element. */
+            bool mouseOn = false; 
 
             /* The parent element. */
             Element* parent;

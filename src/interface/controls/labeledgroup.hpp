@@ -9,7 +9,8 @@ namespace Mineimator
     class LabeledGroup : public Control
     {
         public:
-            LabeledGroup(std::vector<Control*> controls) {
+            LabeledGroup(std::vector<Control*> controls)
+            {
                 this->controls = controls;
             }
 

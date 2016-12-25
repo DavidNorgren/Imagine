@@ -10,7 +10,6 @@ namespace Mineimator
 
     class ProjectHandler {
 
-
     };
 
 }

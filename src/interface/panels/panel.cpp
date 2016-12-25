@@ -74,12 +74,12 @@ void Mineimator::Panel::mouseEvent()
         return;
     }
 
-    if (isInterfaceState(IDLE))
+    if (mouseOn)
     {
         if (mouseInBox(resizeBox))
         {
             // The mouse is near the edge for resizing
-            mouseSetCursor((location == BOTTOM || location == TOP) ? NSRESIZE : WERESIZE);
+            mouseSetCursor(resizeCursor);
             if (mouseLeftPressed())
             {
                 focus();
@@ -107,34 +107,8 @@ void Mineimator::Panel::mouseEvent()
             }
         }
     }
-
-    // Panel is being resized 
-    else if (isFocused() && isInterfaceState(PANEL_RESIZE))
-    {
-        if (location == RIGHT_TOP || location == RIGHT_BOTTOM) {
-            mouseSetCursor(WERESIZE);
-            size = max(PANEL_MIN_WIDTH, sizeResize + (mousePosClick().x - mousePos().x));
-        }
-        else if (location == LEFT_TOP || location == LEFT_BOTTOM) {
-            mouseSetCursor(WERESIZE);
-            size = max(PANEL_MIN_WIDTH, sizeResize + (mousePos().x - mousePosClick().x));
-        }
-        else if (location == TOP) {
-            mouseSetCursor(NSRESIZE);
-            size = max(PANEL_MIN_HEIGHT, sizeResize + (mousePos().y - mousePosClick().y));
-        }
-        else if (location == BOTTOM) {
-            mouseSetCursor(NSRESIZE);
-            size = max(PANEL_MIN_HEIGHT, sizeResize + (mousePosClick().y - mousePos().y));
-        }
-        parent->update();
-
-        // Stop resizing
-        if (!mouseLeftDown()) {
-            setInterfaceState(IDLE);
-        }
-    }
     
+    selectedTab->mouseOn = (mouseOn && mouseInBox(selectedTab->box));
     selectedTab->mouseEvent();
 }
 
@@ -165,9 +139,10 @@ void Mineimator::Panel::addTab(Tab* tab, int index)
         index = tabs.size();
     }
 
-    tabs.insert(tabs.begin() + index, tab);
+    vectorInsert(tabs, index, tab);
     if (tab->visible) {
         selectedTab = tab;
+        visible = true;
     }
 }
 
@@ -175,16 +150,17 @@ void Mineimator::Panel::addTab(Tab* tab, int index)
 void Mineimator::Panel::removeTab(Tab* tab)
 {
     // Remove from list
-    auto i = std::find(tabs.begin(), tabs.end(), tab);
-    tabs.erase(i);
+    int i = vectorFind(tabs, tab);
+    vectorErase(tabs, i);
 
     // If this was the selected tab, select the next or previous one
     if (selectedTab == tab)
     {
         if (tabs.size() > 0) {
-            selectedTab = (i == tabs.end()) ? *(std::prev(i)) : *i;
+            selectedTab = (i == tabs.size()) ? tabs[i - 1] : tabs[i];
         } else {
             selectedTab = nullptr;
+            visible = false;
         }
     }
 }

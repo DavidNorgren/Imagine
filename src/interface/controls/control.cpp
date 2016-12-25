@@ -4,7 +4,7 @@
 
 void Mineimator::Control::mouseEvent()
 {
-    mouseOn = (mouseInBox(box) && isInterfaceState(IDLE));
+    mouseOn = (parent->mouseOn && mouseInBox(box));
     pressed = false;
     
     if (mouseOn)

@@ -13,7 +13,6 @@ namespace Mineimator
     class App : public AppHandler
     {
         public:
-
             /* Program startup. */
             App();
 
@@ -22,7 +21,6 @@ namespace Mineimator
             ProjectHandler* projectHandler;
 
         private:
-
             /* Called by the main window once per frame. */
             void loopEvent() override;
             

@@ -12,21 +12,10 @@ namespace Mineimator
     class Panel : public Element
     {
         public:
-            
-            enum Location
+            Panel(int size, Cursor resizeCursor)
             {
-                LEFT_BOTTOM,
-                RIGHT_BOTTOM,
-                BOTTOM,
-                TOP,
-                LEFT_TOP,
-                RIGHT_TOP
-            };
-
-            Panel(Location location, int size)
-            {
-                this->location = location;
                 this->size = size;
+                this->resizeCursor = resizeCursor;
                 this->selectedTab = nullptr;
             }
             
@@ -43,13 +32,14 @@ namespace Mineimator
             void keyEvent() override;
             void setParent(Element* parent) override;
 
-            Location location;
             int size, sizeVisible, sizeResize;
+            Cursor resizeCursor;
             float moveGlow = 0.f;
             ScreenArea resizeBox;
 
             Tab* selectedTab;
             std::vector<Tab*> tabs;
+            bool visible = false;
     };
 
 }

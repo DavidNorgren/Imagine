@@ -13,7 +13,8 @@ void Mineimator::Row::update()
     }
     
     ScreenPos currentPos = pos;
-    for (Control* control : controls) {
+    for (Control* control : controls)
+    {
         control->box = { currentPos, columnWidth, 0 };
         control->update();
         control->box.width = min(control->box.width, columnWidth);
@@ -33,6 +34,8 @@ void Mineimator::Row::draw()
 
 void Mineimator::Row::mouseEvent()
 {
+    mouseOn = (parent->mouseOn && mouseInBox(box));
+
     for (Control* control : controls) {
         control->mouseEvent();
     }
