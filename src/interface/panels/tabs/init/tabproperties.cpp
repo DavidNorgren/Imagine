@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-void Mineimator::Workspace::initTabProperties()
+void Imagine::Workspace::initTabProperties()
 {
     tabProperties = new Tab("Project properties", true, false,
         {

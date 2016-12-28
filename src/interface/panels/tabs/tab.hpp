@@ -6,7 +6,7 @@
 #include "interface/controls/scrollbar.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
 
     /* A tab for storing a number of expandable sections. */

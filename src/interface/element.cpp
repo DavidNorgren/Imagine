@@ -1,20 +1,19 @@
-#include "interface/element.hpp"
-#include "mineimatorapp.hpp"
+#include "imagineapp.hpp"
 
 
-void Mineimator::Element::setParent(Element* parent)
+void Imagine::Element::setParent(Element* parent)
 {
     this->parent = parent;
 }
 
 
-void Mineimator::Element::focus()
+void Imagine::Element::focus()
 {
     app->interfaceHandler->focus = this;
 }
 
 
-bool Mineimator::Element::isFocused()
+bool Imagine::Element::isFocused()
 {
     return (app->interfaceHandler->focus == this);
 }

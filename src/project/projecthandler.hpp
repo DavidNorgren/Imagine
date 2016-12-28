@@ -5,7 +5,7 @@
 // TODO: Use new format .miproj, a zipped folder with xml for each object
 
 
-namespace Mineimator
+namespace Imagine
 {
 
     class ProjectHandler {

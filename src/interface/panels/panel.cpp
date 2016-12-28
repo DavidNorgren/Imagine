@@ -1,8 +1,8 @@
 #include "interface/interfacehandler.hpp"
-#include "mineimatorapp.hpp"
+#include "imagineapp.hpp"
 
 
-void Mineimator::Panel::update()
+void Imagine::Panel::update()
 {
     if (!selectedTab) {
         return;
@@ -43,7 +43,7 @@ void Mineimator::Panel::update()
 }
 
 
-void Mineimator::Panel::draw()
+void Imagine::Panel::draw()
 {
     // Continue only if there is an active tab in the panel
     if (!selectedTab) {
@@ -68,7 +68,7 @@ void Mineimator::Panel::draw()
 }
 
 
-void Mineimator::Panel::mouseEvent()
+void Imagine::Panel::mouseEvent()
 {
     if (!selectedTab) {
         return;
@@ -113,7 +113,7 @@ void Mineimator::Panel::mouseEvent()
 }
 
 
-void Mineimator::Panel::keyEvent()
+void Imagine::Panel::keyEvent()
 {
     if (!selectedTab) {
         return;
@@ -123,7 +123,7 @@ void Mineimator::Panel::keyEvent()
 }
 
 
-void Mineimator::Panel::setParent(Element* parent)
+void Imagine::Panel::setParent(Element* parent)
 {
     this->parent = parent;
     for (Tab* tab : tabs) {
@@ -132,7 +132,7 @@ void Mineimator::Panel::setParent(Element* parent)
 }
 
 
-void Mineimator::Panel::addTab(Tab* tab, int index)
+void Imagine::Panel::addTab(Tab* tab, int index)
 {
     // Append
     if (index < 0) {
@@ -147,7 +147,7 @@ void Mineimator::Panel::addTab(Tab* tab, int index)
 }
 
 
-void Mineimator::Panel::removeTab(Tab* tab)
+void Imagine::Panel::removeTab(Tab* tab)
 {
     // Remove from list
     int i = vectorFind(tabs, tab);

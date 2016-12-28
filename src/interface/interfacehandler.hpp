@@ -10,7 +10,7 @@
 #include "settings/settings.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
     
     /* Stores and manipulates the components of the interface. */

@@ -3,7 +3,7 @@
 #include "interface/controls/control.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
     
     /* A checkbox with an on/off state. */

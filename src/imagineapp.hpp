@@ -6,10 +6,10 @@
 #include "project/projecthandler.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
 
-    /* Contains the methods and variables for Mine-imator. */
+    /* Contains the methods and variables for the application. */
     class App : public AppHandler
     {
         public:
@@ -32,12 +32,9 @@ namespace Mineimator
 
             /* Called by the main window when resized. */
             void resizeEvent() override;
-
-            /* Default resource pack. */
-            //Resource* minecraft;
     };
 
 }
 
 /* Used to access the program from other class scopes. */
-extern Mineimator::App* app;
+extern Imagine::App* app;

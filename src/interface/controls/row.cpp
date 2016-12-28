@@ -1,7 +1,7 @@
 #include "interface/controls/row.hpp"
 
 
-void Mineimator::Row::update()
+void Imagine::Row::update()
 {
     if (controls.size() == 0) {
         return;
@@ -24,7 +24,7 @@ void Mineimator::Row::update()
 }
 
 
-void Mineimator::Row::draw()
+void Imagine::Row::draw()
 {
     for (Control* control : controls) {
         control->draw();
@@ -32,7 +32,7 @@ void Mineimator::Row::draw()
 }
 
 
-void Mineimator::Row::mouseEvent()
+void Imagine::Row::mouseEvent()
 {
     mouseOn = (parent->mouseOn && mouseInBox(box));
 
@@ -42,7 +42,7 @@ void Mineimator::Row::mouseEvent()
 }
 
 
-void Mineimator::Row::keyEvent()
+void Imagine::Row::keyEvent()
 {
     for (Control* control : controls) {
         control->keyEvent();
@@ -50,7 +50,7 @@ void Mineimator::Row::keyEvent()
 }
 
 
-void Mineimator::Row::setParent(Element* parent)
+void Imagine::Row::setParent(Element* parent)
 {
     this->parent = parent;
     for (Control* control : controls) {

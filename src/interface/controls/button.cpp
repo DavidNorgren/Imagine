@@ -1,13 +1,13 @@
 #include "interface/controls/button.hpp"
 
 
-void Mineimator::Button::update()
+void Imagine::Button::update()
 {
     box.height = height;
 }
 
 
-void Mineimator::Button::draw()
+void Imagine::Button::draw()
 {
     ScreenPos contentPos = pos;
     if (pressed) {
@@ -34,7 +34,7 @@ void Mineimator::Button::draw()
 }
 
 
-void Mineimator::IconButton::update()
+void Imagine::IconButton::update()
 {
     box.width = width;
     if (showText) {
@@ -44,7 +44,7 @@ void Mineimator::IconButton::update()
 }
 
 
-void Mineimator::IconButton::draw()
+void Imagine::IconButton::draw()
 {
     ScreenArea iconBox = { pos, width, height };
     ScreenPos contentPos = pos;

@@ -1,45 +1,45 @@
 #include <iostream>
 
-#include "mineimatorapp.hpp"
+#include "imagineapp.hpp"
 
 
 int main()
 { 
-    new Mineimator::App();
+    new Imagine::App();
     return 0;
 }
 
 
-Mineimator::App* app;
+Imagine::App* app;
 
-Mineimator::App::App()
+Imagine::App::App()
 {
     app = this;
     interfaceHandler = new InterfaceHandler();
-    mainWindow->setTitle("Mine-imator");
+    mainWindow->setTitle("Imagine");
     launch();
 }
 
 
-void Mineimator::App::loopEvent()
+void Imagine::App::loopEvent()
 {
     interfaceHandler->draw();
 }
 
 
-void Mineimator::App::mouseEvent()
+void Imagine::App::mouseEvent()
 {
     interfaceHandler->mouseEvent();
 }
 
 
-void Mineimator::App::keyEvent()
+void Imagine::App::keyEvent()
 {
     interfaceHandler->keyEvent();
 }
 
 
-void Mineimator::App::resizeEvent()
+void Imagine::App::resizeEvent()
 {
     interfaceHandler->update();
 }

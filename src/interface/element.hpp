@@ -3,7 +3,7 @@
 #include <base.hpp>
 
 
-namespace Mineimator
+namespace Imagine
 {
 
     /* An element of the interface. Defines event and drawing functions. */

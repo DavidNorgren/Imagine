@@ -9,7 +9,7 @@
 #include "settings/settings.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
 
     /* Interface for all the controls. */

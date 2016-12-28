@@ -1,7 +1,7 @@
 #include "tabsection.hpp"
 
 
-Mineimator::TabSection::TabSection(string name, bool open, std::vector<Control*> controls)
+Imagine::TabSection::TabSection(string name, bool open, std::vector<Control*> controls)
 {
     this->name = name;
     this->open = open;
@@ -19,7 +19,7 @@ Mineimator::TabSection::TabSection(string name, bool open, std::vector<Control*>
 }
 
 
-void Mineimator::TabSection::update()
+void Imagine::TabSection::update()
 {
     ScreenPos currentPos = pos;
     openButton->box = { currentPos, box.width, 0 };
@@ -40,7 +40,7 @@ void Mineimator::TabSection::update()
 }
 
 
-void Mineimator::TabSection::draw()
+void Imagine::TabSection::draw()
 {
     openButton->draw();
     
@@ -54,7 +54,7 @@ void Mineimator::TabSection::draw()
 }
 
 
-void Mineimator::TabSection::mouseEvent()
+void Imagine::TabSection::mouseEvent()
 {
     openButton->mouseEvent();
     
@@ -68,7 +68,7 @@ void Mineimator::TabSection::mouseEvent()
 }
 
 
-void Mineimator::TabSection::keyEvent()
+void Imagine::TabSection::keyEvent()
 {
     openButton->keyEvent();
     
@@ -82,7 +82,7 @@ void Mineimator::TabSection::keyEvent()
 }
 
 
-void Mineimator::TabSection::setParent(Element* parent)
+void Imagine::TabSection::setParent(Element* parent)
 {
     this->parent = parent;
     openButton->setParent(this);

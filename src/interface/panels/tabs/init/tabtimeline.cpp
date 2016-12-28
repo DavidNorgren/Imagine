@@ -1,7 +1,7 @@
 #include "interface/interfacehandler.hpp"
 
 
-void Mineimator::Workspace::initTabTimeline()
+void Imagine::Workspace::initTabTimeline()
 {
     tabTimeline = new Tab("Timeline", true, false,
         {

@@ -6,7 +6,7 @@
 #include "interface/controls/button.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
     
     /* A section for storing a specific collection of controls. */

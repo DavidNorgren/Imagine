@@ -1,7 +1,7 @@
 #include "interface/interfacehandler.hpp"
 
 
-void Mineimator::Workspace::initTabSettings()
+void Imagine::Workspace::initTabSettings()
 {
     tabSettings = new Tab("Settings", true, false,
         {

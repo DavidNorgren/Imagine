@@ -2,7 +2,7 @@
 #include "tab.hpp"
 
 
-void Mineimator::Tab::update()
+void Imagine::Tab::update()
 {
     // Define section area
     sectionsBox = {
@@ -23,17 +23,34 @@ void Mineimator::Tab::update()
     // Update sections
     ScreenPos currentPos = sectionsBox.pos - sectionsOffset;
     sectionsSize = 0;
+
+    // Split into columns
+    int columns = clamp(sectionsBox.width / PANEL_START_WIDTH, 1, (int)sections.size());
+    int columnWidth = sectionsBox.width / columns - TAB_CONTENT_PADDING * (columns - 1);
+    int columnSection = 0;
+    int column = 0;
+
     for (TabSection* section : sections)
     {
-        section->box = { currentPos, sectionsBox.width, 0 };
+        section->box = { currentPos, columnWidth, 0 };
         section->update();
         currentPos.y += section->box.height;
-        sectionsSize += section->box.height;
+        sectionsSize = max(sectionsSize, currentPos.y - (sectionsBox.pos.y - sectionsOffset.y));
+
+        // Next column
+        columnSection++;
+        if (columnSection >= sections.size() / columns && column != columns - 1)
+        {
+            currentPos.x += columnWidth + TAB_CONTENT_PADDING * 2;
+            currentPos.y = sectionsBox.pos.y - sectionsOffset.y;
+            columnSection = 0;
+            column++;
+        }
     }
 }
 
 
-void Mineimator::Tab::draw()
+void Imagine::Tab::draw()
 {
     // Transparent if moved
     if (isFocused() && isInterfaceState(TAB_MOVE)) {
@@ -68,7 +85,7 @@ void Mineimator::Tab::draw()
 }
 
 
-void Mineimator::Tab::mouseEvent()
+void Imagine::Tab::mouseEvent()
 {
     // This tab is currently being moved
     if (isFocused() && isInterfaceState(TAB_MOVE))
@@ -117,7 +134,7 @@ void Mineimator::Tab::mouseEvent()
 }
 
 
-void Mineimator::Tab::keyEvent()
+void Imagine::Tab::keyEvent()
 {
     for (TabSection* section : sections) {
         section->keyEvent();
@@ -125,7 +142,7 @@ void Mineimator::Tab::keyEvent()
 }
 
 
-void Mineimator::Tab::setParent(Element* parent)
+void Imagine::Tab::setParent(Element* parent)
 {
     this->parent = parent;
     for (TabSection* section : sections) {

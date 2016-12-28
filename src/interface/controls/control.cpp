@@ -1,8 +1,7 @@
 #include "interface/controls/control.hpp"
-#include "interface/interfacehandler.hpp"
 
 
-void Mineimator::Control::mouseEvent()
+void Imagine::Control::mouseEvent()
 {
     mouseOn = (parent->mouseOn && mouseInBox(box));
     pressed = false;
@@ -24,7 +23,7 @@ void Mineimator::Control::mouseEvent()
 }
 
 
-void Mineimator::Control::keyEvent()
+void Imagine::Control::keyEvent()
 {
     
 }

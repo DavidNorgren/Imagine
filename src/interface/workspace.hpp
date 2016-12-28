@@ -11,7 +11,7 @@
 #include "interface/views/view.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
 
     class Workspace : public Element

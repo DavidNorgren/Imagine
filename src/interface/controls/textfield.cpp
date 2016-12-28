@@ -1,10 +1,10 @@
 #include "interface/controls/textfield.hpp"
-#include "mineimatorapp.hpp"
+#include "imagineapp.hpp"
 
 #include <iostream>
 
 
-Mineimator::TextField::TextField(string name, int lines, std::function<bool()> visibleFunc)
+Imagine::TextField::TextField(string name, int lines, std::function<bool()> visibleFunc)
 {
     this->name = name;
     this->lines = lines;
@@ -16,7 +16,7 @@ Mineimator::TextField::TextField(string name, int lines, std::function<bool()> v
 }
 
 
-void Mineimator::TextField::update()
+void Imagine::TextField::update()
 {
     /* Define text area */
     box.height = stringGetHeight(" ") * lines + TEXTBOX_BOX_PADDING * 2;
@@ -49,7 +49,7 @@ void Mineimator::TextField::update()
 }
 
 
-void Mineimator::TextField::draw()
+void Imagine::TextField::draw()
 {
     ScreenArea drawingArea = getDrawingArea();
 
@@ -89,7 +89,7 @@ void Mineimator::TextField::draw()
 }
 
 
-void Mineimator::TextField::mouseEvent()
+void Imagine::TextField::mouseEvent()
 {
     mouseOn = (parent->mouseOn && mouseInBox(box));
 
@@ -151,7 +151,7 @@ void Mineimator::TextField::mouseEvent()
 }
 
 
-void Mineimator::TextField::keyEvent()
+void Imagine::TextField::keyEvent()
 {
     if (!isFocused()) {
         return;
@@ -310,7 +310,7 @@ void Mineimator::TextField::keyEvent()
 }
 
 
-void Mineimator::TextField::setParent(Element* parent)
+void Imagine::TextField::setParent(Element* parent)
 {
     this->parent = parent;
     if (scrollBar) {
@@ -319,7 +319,7 @@ void Mineimator::TextField::setParent(Element* parent)
 }
 
 
-Mineimator::TextField::Caret Mineimator::TextField::caretAtPos(ScreenPos pos)
+Imagine::TextField::Caret Imagine::TextField::caretAtPos(ScreenPos pos)
 {
     Font* font = app->drawingFont;
     ScreenPos charPos = { 0, 0 };
@@ -362,7 +362,7 @@ Mineimator::TextField::Caret Mineimator::TextField::caretAtPos(ScreenPos pos)
 }
 
 
-Mineimator::TextField::Caret Mineimator::TextField::caretAtIndex(int index)
+Imagine::TextField::Caret Imagine::TextField::caretAtIndex(int index)
 {
     Font* font = app->drawingFont;
     Caret caret;
@@ -401,7 +401,7 @@ Mineimator::TextField::Caret Mineimator::TextField::caretAtIndex(int index)
 }
 
 
-Mineimator::TextField::Caret Mineimator::TextField::caretAtIndexWrap(int indexWrap)
+Imagine::TextField::Caret Imagine::TextField::caretAtIndexWrap(int indexWrap)
 {
     Font* font = app->drawingFont;
     Caret caret;
@@ -448,7 +448,7 @@ bool isWordSeparator(char c)
 }
 
 
-int Mineimator::TextField::findNextWord(int indexWrap)
+int Imagine::TextField::findNextWord(int indexWrap)
 {
     // Look to the right until a word separating character
     // is found, or the string ends.
@@ -466,7 +466,7 @@ int Mineimator::TextField::findNextWord(int indexWrap)
 }
 
 
-int Mineimator::TextField::findPreviousWord(int indexWrap)
+int Imagine::TextField::findPreviousWord(int indexWrap)
 {
     // Look to the left until a word separating character
     // is found, or the beginning of the string is reached.
@@ -481,7 +481,7 @@ int Mineimator::TextField::findPreviousWord(int indexWrap)
 }
 
 
-void Mineimator::TextField::updateWrap()
+void Imagine::TextField::updateWrap()
 {
     Font* font = app->drawingFont;
     int x = 0, sepIndex = -1;
@@ -530,7 +530,7 @@ void Mineimator::TextField::updateWrap()
 }
 
 
-void Mineimator::TextField::updateOffset()
+void Imagine::TextField::updateOffset()
 {
     // Moves the view to the editing marker
 

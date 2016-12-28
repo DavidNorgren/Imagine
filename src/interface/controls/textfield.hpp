@@ -4,7 +4,7 @@
 #include "interface/controls/scrollbar.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
     
     /* Editable textbox. */

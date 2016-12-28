@@ -3,7 +3,7 @@
 #include "interface/controls/control.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
     
     /* A row of controls that is adjusted to the panel width. */

@@ -2,7 +2,7 @@
 #include "interface/workspace.hpp"
 
 
-Mineimator::Workspace::Workspace()
+Imagine::Workspace::Workspace()
 {
     // Create panels
     panels.resize(6);
@@ -20,10 +20,13 @@ Mineimator::Workspace::Workspace()
     panels[RIGHT_TOP]->addTab(tabProperties);
     panels[BOTTOM]->addTab(tabTimeline);
     panels[RIGHT_TOP]->addTab(tabSettings);
+
+    // Create views
+    viewMain = new View();
 }
 
 
-void Mineimator::Workspace::update()
+void Imagine::Workspace::update()
 {
     // Set panel locations and sizes
     for (Panel* panel : panels) {
@@ -150,21 +153,21 @@ void Mineimator::Workspace::update()
         max(0, box.width - (panels[LEFT_TOP]->sizeVisible + panels[LEFT_BOTTOM]->sizeVisible + panels[RIGHT_TOP]->sizeVisible + panels[RIGHT_BOTTOM]->sizeVisible)),
         max(0, box.height - (panels[TOP]->sizeVisible + panels[BOTTOM]->sizeVisible))
     };
+    viewMain->box = viewArea;
+    viewMain->update();
 }
 
 
-void Mineimator::Workspace::draw()
+void Imagine::Workspace::draw()
 {
     // Draw each view
-    //viewMain->draw();
+    viewMain->draw();
     //viewSecond->draw();
 
     // Draw each panel
     for (Panel* panel : panels) {
         panel->draw();
     }
-
-    drawBox(viewArea, Color(0.1f));
 
     // Draw the moved tab on top
     if (isInterfaceState(TAB_MOVE)) {
@@ -173,7 +176,7 @@ void Mineimator::Workspace::draw()
 }
 
 
-void Mineimator::Workspace::mouseEvent()
+void Imagine::Workspace::mouseEvent()
 {
     // Find the panel on the mouse
     Panel* mouseOnPanel = nullptr;
@@ -202,9 +205,19 @@ void Mineimator::Workspace::mouseEvent()
         int newTabIndex = -1;
 
         // Mouse is on existing panel
-        for (Panel* panel : panels) {
-            if (panel->visible && mouseInBox(panel->box)) {
+        for (Panel* panel : panels)
+        {
+            if (panel->visible && mouseInBox(panel->box))
+            {
                 newPanel = panel;
+                for (int t = 0; t < panel->tabs.size(); t++)
+                {
+                    Tab* tab = panel->tabs[t];
+                    if (mouseInBox(tab->selectBox) ||
+                        (mouseInBox(tab->box) && panel->selectedTab == tab)) {
+                        newTabIndex = t;
+                    }
+                }
             }
         }
 
@@ -359,7 +372,7 @@ void Mineimator::Workspace::mouseEvent()
 }
 
 
-void Mineimator::Workspace::keyEvent()
+void Imagine::Workspace::keyEvent()
 {
     for (Panel* panel : panels) {
         panel->keyEvent();
@@ -367,10 +380,11 @@ void Mineimator::Workspace::keyEvent()
 }
 
 
-void Mineimator::Workspace::setParent(Element* parent)
+void Imagine::Workspace::setParent(Element* parent)
 {
     this->parent = parent;
     for (Panel* panel : panels) {
         panel->setParent(this);
     }
+    viewMain->setParent(this);
 }

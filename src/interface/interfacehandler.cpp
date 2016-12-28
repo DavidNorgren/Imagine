@@ -1,8 +1,7 @@
-#include "interface/interfacehandler.hpp"
-#include "mineimatorapp.hpp"
+#include "imagineapp.hpp"
 
 
-Mineimator::InterfaceHandler::InterfaceHandler()
+Imagine::InterfaceHandler::InterfaceHandler()
 {
     workspace = new Workspace();
     
@@ -11,7 +10,7 @@ Mineimator::InterfaceHandler::InterfaceHandler()
 }
 
 
-void Mineimator::InterfaceHandler::update()
+void Imagine::InterfaceHandler::update()
 {
     box = { { 0, 0 }, app->mainWindow->width, app->mainWindow->height };
     workspace->box = box;
@@ -19,14 +18,14 @@ void Mineimator::InterfaceHandler::update()
 }
 
 
-void Mineimator::InterfaceHandler::draw()
+void Imagine::InterfaceHandler::draw()
 {
     drawBegin();
     workspace->draw();
 }
 
 
-void Mineimator::InterfaceHandler::mouseEvent()
+void Imagine::InterfaceHandler::mouseEvent()
 {
     if (isInterfaceState(IDLE) && mouseLeftPressed()) {
         focus = nullptr;
@@ -35,50 +34,50 @@ void Mineimator::InterfaceHandler::mouseEvent()
 }
 
 
-void Mineimator::InterfaceHandler::keyEvent()
+void Imagine::InterfaceHandler::keyEvent()
 {
     workspace->keyEvent();
 }
 
 
-void Mineimator::InterfaceHandler::setParent(Element* parent)
+void Imagine::InterfaceHandler::setParent(Element* parent)
 {
     this->parent = parent;
     workspace->setParent(this);
 }
 
 
-void Mineimator::setInterfaceState(InterfaceState state)
+void Imagine::setInterfaceState(InterfaceState state)
 {
     app->interfaceHandler->state = state;
 }
 
 
-Mineimator::InterfaceState Mineimator::getInterfaceState()
+Imagine::InterfaceState Imagine::getInterfaceState()
 {
     return app->interfaceHandler->state;
 }
 
 
-bool Mineimator::isInterfaceState(InterfaceState state)
+bool Imagine::isInterfaceState(InterfaceState state)
 {
     return getInterfaceState() == state;
 }
 
 
-void Mineimator::setFocused(Element* element)
+void Imagine::setFocused(Element* element)
 {
     app->interfaceHandler->focus = element;
 }
 
 
-Mineimator::Element* Mineimator::getFocused()
+Imagine::Element* Imagine::getFocused()
 {
     return app->interfaceHandler->focus;
 }
 
 
-bool Mineimator::isFocused(Element* element)
+bool Imagine::isFocused(Element* element)
 {
     return getFocused() == element;
 }

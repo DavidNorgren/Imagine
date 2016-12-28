@@ -3,7 +3,7 @@
 #define NO_ICON     -1
 
 
-namespace Mineimator
+namespace Imagine
 {
     
     enum Icon

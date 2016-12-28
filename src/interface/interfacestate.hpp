@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace Mineimator
+namespace Imagine
 {
     
     /* Defines the possible actions by the user. Only

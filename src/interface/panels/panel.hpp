@@ -5,7 +5,7 @@
 #include "interface/panels/tabs/tab.hpp"
 
 
-namespace Mineimator
+namespace Imagine
 {
 
     /* A panel that can hold a number of tabs. */

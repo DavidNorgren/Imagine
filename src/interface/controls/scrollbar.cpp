@@ -1,8 +1,8 @@
 #include "interface/controls/scrollbar.hpp"
-#include "mineimatorapp.hpp"
+#include "imagineapp.hpp"
 
 
-void Mineimator::ScrollBar::update()
+void Imagine::ScrollBar::update()
 {
     // Determine visibility
     if (visibleSize >= totalSize || totalSize <= 0 || visibleSize < SCROLLBAR_MIN_SIZE) {
@@ -14,7 +14,7 @@ void Mineimator::ScrollBar::update()
         visible = true;
     }
 
-    /* Set bar */
+    // Set bar
     float visiblePerc = (float)visibleSize / (float)totalSize;
     float offsetPerc = (float)*offset / (float)totalSize;
 
@@ -37,11 +37,12 @@ void Mineimator::ScrollBar::update()
         bar.pos.x = min(bar.pos.x, pos.x + box.width - bar.width);
     }
 
+    // Keep the bar within the box
     *offset = clamp(*offset, 0, totalSize - visibleSize);
 }
 
 
-void Mineimator::ScrollBar::draw()
+void Imagine::ScrollBar::draw()
 {
     if (!visible) {
         return;
@@ -52,20 +53,22 @@ void Mineimator::ScrollBar::draw()
 }
 
 
-void Mineimator::ScrollBar::mouseEvent()
+void Imagine::ScrollBar::mouseEvent()
 {
     if (!visible) {
         return;
     }
 
+    float visiblePerc = (float)visibleSize / (float)totalSize;
+
     mouseOn = (parent->mouseOn && mouseInBox(box));
     pressed = false;
-
     
     if (mouseOn && isInterfaceState(IDLE))
     {
         mouseSetCursor(HANDPOINT);
 
+        // Click bar, start dragging
         if (mouseInBox(bar) && mouseLeftDown())
         {
             pressed = true;
@@ -73,38 +76,35 @@ void Mineimator::ScrollBar::mouseEvent()
             setInterfaceState(SCROLLBAR_MOVE);
             clickOffset = *offset;
         }
+
+        // Jump where clicked and start dragging
         else if (mouseLeftPressed())
         {
+            pressed = true;
             focus();
-            if (direction == VERTICAL)
-            {
-                if (mousePos().y < bar.pos.y) {
-                    *offset -= visibleSize;
-                } else {
-                    *offset += visibleSize;
-                }
-            }
-            else
-            {
-                if (mousePos().x < bar.pos.x) {
-                    *offset -= visibleSize;
-                } else {
-                    *offset += visibleSize;
-                }
+            setInterfaceState(SCROLLBAR_MOVE);
+
+            if (direction == VERTICAL) {
+                *offset = (mousePos().y - box.pos.y - bar.height / 2) / visiblePerc;
+            } else {
+                *offset = (mousePos().x - box.pos.x - bar.width / 2) / visiblePerc;
             }
             *offset = clamp(*offset, 0, totalSize - visibleSize);
+            clickOffset = *offset;
             parent->update();
         }
     }
+
+    // Moving
     else if (isFocused() && isInterfaceState(SCROLLBAR_MOVE))
     {
         pressed = true;
         mouseSetCursor(HANDPOINT);
 
         if (direction == VERTICAL) {
-            *offset = clickOffset + (mousePos().y - mousePosClick().y) * ((float)totalSize / (float)visibleSize);
+            *offset = clickOffset + (mousePos().y - mousePosClick().y) / visiblePerc;
         } else {
-            *offset = clickOffset + (mousePos().x - mousePosClick().x) * ((float)totalSize / (float)visibleSize);
+            *offset = clickOffset + (mousePos().x - mousePosClick().x) / visiblePerc;
         }
         *offset = clamp(*offset, 0, totalSize - visibleSize);
         parent->update();
@@ -116,6 +116,6 @@ void Mineimator::ScrollBar::mouseEvent()
 }
 
 
-void Mineimator::ScrollBar::keyEvent()
+void Imagine::ScrollBar::keyEvent()
 {
 }

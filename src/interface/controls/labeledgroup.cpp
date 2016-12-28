@@ -1,7 +1,7 @@
 #include "interface/controls/labeledgroup.hpp"
 
 
-void Mineimator::LabeledGroup::update()
+void Imagine::LabeledGroup::update()
 {
     int labelWidth = 0;
     
@@ -22,7 +22,7 @@ void Mineimator::LabeledGroup::update()
 }
 
 
-void Mineimator::LabeledGroup::draw()
+void Imagine::LabeledGroup::draw()
 {
     for (Control* control : controls) {
         drawTextAligned(control->name + ":", { pos.x, control->pos.y + control->box.height / 2 }, LEFT, MIDDLE, SETTING_INTERFACE_COLOR_TEXT);
@@ -31,7 +31,7 @@ void Mineimator::LabeledGroup::draw()
 }
 
 
-void Mineimator::LabeledGroup::mouseEvent()
+void Imagine::LabeledGroup::mouseEvent()
 {
     mouseOn = (parent->mouseOn && mouseInBox(box));
 
@@ -41,7 +41,7 @@ void Mineimator::LabeledGroup::mouseEvent()
 }
 
 
-void Mineimator::LabeledGroup::keyEvent()
+void Imagine::LabeledGroup::keyEvent()
 {
     for (Control* control : controls) {
         control->keyEvent();
@@ -49,7 +49,7 @@ void Mineimator::LabeledGroup::keyEvent()
 }
 
 
-void Mineimator::LabeledGroup::setParent(Element* parent)
+void Imagine::LabeledGroup::setParent(Element* parent)
 {
     this->parent = parent;
     for (Control* control : controls) {

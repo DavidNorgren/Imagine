@@ -1,14 +1,14 @@
 #include "interface/controls/checkbox.hpp"
 
 
-void Mineimator::CheckBox::update()
+void Imagine::CheckBox::update()
 {
     box.width = 16 + 10 + stringGetWidth(name);
     box.height = 16;
 }
 
 
-void Mineimator::CheckBox::draw()
+void Imagine::CheckBox::draw()
 {
     // Box
     drawImage(IMAGE_CHECKBOX, pos, pressed ? SETTING_INTERFACE_COLOR_BOXES_PRESSED : SETTING_INTERFACE_COLOR_BOXES);
