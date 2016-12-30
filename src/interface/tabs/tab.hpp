@@ -2,7 +2,7 @@
 
 #include "base.hpp"
 
-#include "interface/panels/tabs/tabsection.hpp"
+#include "interface/tabs/tabsection.hpp"
 #include "interface/controls/scrollbar.hpp"
 
 

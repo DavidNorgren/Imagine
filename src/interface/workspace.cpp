@@ -1,4 +1,4 @@
-#include "interface/interfacehandler.hpp"
+/*#include "interface/interfacehandler.hpp"
 #include "interface/workspace.hpp"
 
 
@@ -387,4 +387,4 @@ void Imagine::Workspace::setParent(Element* parent)
         panel->setParent(this);
     }
     viewMain->setParent(this);
-}
+}*/

@@ -3,7 +3,24 @@
 
 Imagine::InterfaceHandler::InterfaceHandler()
 {
-    workspace = new Workspace();
+    // Setup interface
+    rootContainer =
+        new Container(Container::HORIZONTAL, {
+            new Container(Container::VERTICAL, {
+                new Container(Container::HORIZONTAL, {
+                    new View(),
+                    new TabCollection({
+                        createTabSettings()
+                    }, PANEL_START_WIDTH)
+                }),
+                new TabCollection({
+                    createTabTimeline()
+                }, PANEL_START_HEIGHT)
+            }),
+            new TabCollection({
+                createTabProperties()
+            }, PANEL_START_WIDTH)
+        });
     
     // This is the root
     setParent(nullptr);
@@ -12,16 +29,15 @@ Imagine::InterfaceHandler::InterfaceHandler()
 
 void Imagine::InterfaceHandler::update()
 {
-    box = { { 0, 0 }, app->mainWindow->width, app->mainWindow->height };
-    workspace->box = box;
-    workspace->update();
+    rootContainer->box = { { 0, 0 }, app->mainWindow->width, app->mainWindow->height };
+    rootContainer->update();
 }
 
 
 void Imagine::InterfaceHandler::draw()
 {
     drawBegin();
-    workspace->draw();
+    rootContainer->draw();
 }
 
 
@@ -30,20 +46,20 @@ void Imagine::InterfaceHandler::mouseEvent()
     if (isInterfaceState(IDLE) && mouseLeftPressed()) {
         focus = nullptr;
     }
-    workspace->mouseEvent();
+    rootContainer->mouseEvent();
 }
 
 
 void Imagine::InterfaceHandler::keyEvent()
 {
-    workspace->keyEvent();
+    rootContainer->keyEvent();
 }
 
 
 void Imagine::InterfaceHandler::setParent(Element* parent)
 {
     this->parent = parent;
-    workspace->setParent(this);
+    rootContainer->setParent(this);
 }
 
 

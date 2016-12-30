@@ -1,22 +1,25 @@
 #pragma once
 
-#include "interface/element.hpp"
+#include "interface/container.hpp"
 #include "interface/controls/button.hpp"
-#include "interface/panels/tabs/tab.hpp"
+#include "interface/tabs/tab.hpp"
 
 
 namespace Imagine
 {
 
-    /* A panel that can hold a number of tabs. */
-    class Panel : public Element
+    /* A container for a number of tabs, each with their sections with settings. */
+    class TabCollection : public Container
     {
         public:
-            Panel(int size, Cursor resizeCursor)
+            TabCollection(std::vector<Tab*> tabs, int size) :
+                Container(OTHER, {}, FIXED)
             {
-                this->size = size;
-                this->resizeCursor = resizeCursor;
-                this->selectedTab = nullptr;
+                visible = false;
+                for (Tab* tab : tabs) {
+                    addTab(tab);
+                }
+                this->sizeFixed = size;
             }
             
             /* Adds an initial tab to the panel. */
@@ -32,14 +35,11 @@ namespace Imagine
             void keyEvent() override;
             void setParent(Element* parent) override;
 
-            int size, sizeVisible, sizeResize;
+            Tab* selectedTab = nullptr;
+            std::vector<Tab*> tabs;
+
             Cursor resizeCursor;
             float moveGlow = 0.f;
-            ScreenArea resizeBox;
-
-            Tab* selectedTab;
-            std::vector<Tab*> tabs;
-            bool visible = false;
     };
 
 }

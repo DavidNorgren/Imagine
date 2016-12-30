@@ -15,7 +15,7 @@ void Imagine::View::update()
 void Imagine::View::draw()
 {
     drawBox(box, SETTING_INTERFACE_COLOR_BACKGROUND);
-    drawBox(contentBox, COLOR_BLACK);
+    drawBox(contentBox, { 0.3f });
 }
 
 

@@ -4,9 +4,17 @@
 #include <functional>
 #include <base.hpp>
 
-#include "interface/interfacestate.hpp"
-#include "interface/workspace.hpp"
+#include "interface/controls/control.hpp"
+#include "interface/controls/button.hpp"
+#include "interface/controls/checkbox.hpp"
+#include "interface/controls/row.hpp"
+#include "interface/controls/scrollbar.hpp"
+#include "interface/controls/textfield.hpp"
+#include "interface/controls/labeledgroup.hpp"
+#include "interface/tabs/tabcollection.hpp"
+#include "interface/views/view.hpp"
 #include "interface/images.hpp"
+#include "interface/interfacestate.hpp"
 #include "settings/settings.hpp"
 
 
@@ -27,15 +35,19 @@ namespace Imagine
             void keyEvent() override;
             void setParent(Element* parent) override;
             
-            /* Area consisting of up to six visible panels and
-               a view space with two visible views. */
-            Workspace* workspace;
-            
             /* The current action by the user */
             InterfaceState state = IDLE;
 
             /* The currently focused element in the interface. */
             Element* focus = nullptr;
+            
+            /* Root container of the interface. */
+            Container* rootContainer;
+
+            /* Create the tabs. */
+            Tab* createTabProperties();
+            Tab* createTabTimeline();
+            Tab* createTabSettings();
     };
 
     /* Get/set interface state. */

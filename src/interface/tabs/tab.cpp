@@ -105,7 +105,7 @@ void Imagine::Tab::mouseEvent()
             setInterfaceState(TAB_MOVE);
             moveStartPos = pos;
             moveSelectStartPos = selectBox.pos;
-            ((Panel*)parent)->removeTab(this);
+            //((Panel*)parent)->removeTab(this);
             parent->parent->update();
         }
 

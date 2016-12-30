@@ -1,14 +1,17 @@
 #pragma once
 
-#include "interface/element.hpp"
+#include "interface/container.hpp"
 
 namespace Imagine
 {
 
     /* A view into the 3D scene. */
-    class View : public Element
+    class View : public Container
     {
         public:
+            View() :
+                Container(OTHER, {}, FILL) {};
+
             /* Element methods. */
             void update();
             void draw();

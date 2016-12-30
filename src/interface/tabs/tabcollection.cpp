@@ -1,13 +1,9 @@
-#include "interface/interfacehandler.hpp"
+#include "interface/tabs/tabcollection.hpp"
 #include "imagineapp.hpp"
 
 
-void Imagine::Panel::update()
+void Imagine::TabCollection::update()
 {
-    if (!selectedTab) {
-        return;
-    }
-
     // Get total width of every tab
     int selectTotalWidth = 0;
     for (Tab* tab : tabs)
@@ -15,7 +11,8 @@ void Imagine::Panel::update()
         // The selected tab is displayed with bold text
         if (selectedTab == tab) {
             tab->selectBox.width = stringGetWidth(tab->name, BOLD) + 20;
-        } else {
+        } 
+        else {
             tab->selectBox.width = stringGetWidth(tab->name) + 20;
         }
         tab->selectBox.height = TAB_SELECT_HEIGHT;
@@ -42,14 +39,8 @@ void Imagine::Panel::update()
     selectedTab->update();
 }
 
-
-void Imagine::Panel::draw()
+void Imagine::TabCollection::draw()
 {
-    // Continue only if there is an active tab in the panel
-    if (!selectedTab) {
-        return;
-    }
-    
     // Tab selector
     drawBox({ box.pos, box.width, TAB_SELECT_HEIGHT }, SETTING_INTERFACE_COLOR_BACKGROUND);
     for (Tab* tab : tabs)
@@ -68,15 +59,11 @@ void Imagine::Panel::draw()
 }
 
 
-void Imagine::Panel::mouseEvent()
+void Imagine::TabCollection::mouseEvent()
 {
-    if (!selectedTab) {
-        return;
-    }
-
     if (mouseOn)
     {
-        if (mouseInBox(resizeBox))
+        /*if (mouseInBox(resizeBox))
         {
             // The mouse is near the edge for resizing
             mouseSetCursor(resizeCursor);
@@ -88,7 +75,7 @@ void Imagine::Panel::mouseEvent()
             }
         }
         else
-        {
+        {*/
             // Tab selector
             for (Tab* tab : tabs)
             {
@@ -105,7 +92,7 @@ void Imagine::Panel::mouseEvent()
                     }
                 }
             }
-        }
+        //}
     }
     
     selectedTab->mouseOn = (mouseOn && mouseInBox(selectedTab->box));
@@ -113,17 +100,13 @@ void Imagine::Panel::mouseEvent()
 }
 
 
-void Imagine::Panel::keyEvent()
+void Imagine::TabCollection::keyEvent()
 {
-    if (!selectedTab) {
-        return;
-    }
-    
     selectedTab->keyEvent();
 }
 
 
-void Imagine::Panel::setParent(Element* parent)
+void Imagine::TabCollection::setParent(Element* parent)
 {
     this->parent = parent;
     for (Tab* tab : tabs) {
@@ -132,7 +115,7 @@ void Imagine::Panel::setParent(Element* parent)
 }
 
 
-void Imagine::Panel::addTab(Tab* tab, int index)
+void Imagine::TabCollection::addTab(Tab* tab, int index)
 {
     // Append
     if (index < 0) {
@@ -147,7 +130,7 @@ void Imagine::Panel::addTab(Tab* tab, int index)
 }
 
 
-void Imagine::Panel::removeTab(Tab* tab)
+void Imagine::TabCollection::removeTab(Tab* tab)
 {
     // Remove from list
     int i = vectorFind(tabs, tab);
@@ -158,7 +141,8 @@ void Imagine::Panel::removeTab(Tab* tab)
     {
         if (tabs.size() > 0) {
             selectedTab = (i == tabs.size()) ? tabs[i - 1] : tabs[i];
-        } else {
+        }
+        else {
             selectedTab = nullptr;
             visible = false;
         }
