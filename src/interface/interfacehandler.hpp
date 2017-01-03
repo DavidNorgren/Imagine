@@ -22,18 +22,17 @@ namespace Imagine
 {
     
     /* Stores and manipulates the components of the interface. */
-    class InterfaceHandler : public Element
+    class InterfaceHandler
     {
         public:
             /* Initializes the interface. */
             InterfaceHandler();
 
-            /* Element methods. */
-            void update() override;
-            void draw() override;
-            void mouseEvent() override;
-            void keyEvent() override;
-            void setParent(Element* parent) override;
+            /* Update methods. */
+            void update();
+            void draw();
+            void mouseEvent();
+            void keyEvent();
             
             /* The current action by the user */
             InterfaceState state = IDLE;

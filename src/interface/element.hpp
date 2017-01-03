@@ -2,6 +2,8 @@
 
 #include <base.hpp>
 
+#include "settings/settings.hpp"
+
 
 namespace Imagine
 {

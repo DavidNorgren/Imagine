@@ -5,11 +5,11 @@
 #define TRUE_FUNC   []() { return true; }
 #define FALSE_FUNC  []() { return false; }
 
-#define PANEL_START_WIDTH       380
-#define PANEL_START_HEIGHT      210
-#define PANEL_MIN_WIDTH         300
-#define PANEL_MIN_HEIGHT        30
-#define PANEL_RESIZE_BOX_SIZE   5
+#define CONTAINER_START_SIZE        380
+#define CONTAINER_MIN_WIDTH         300
+#define CONTAINER_MIN_HEIGHT        30
+#define CONTAINER_INSERT_SIZE       50
+#define CONTAINER_RESIZE_BOX_SIZE   20
 
 #define TAB_CONTENT_PADDING     8
 #define TAB_CONTENT_MIN_WIDTH   300

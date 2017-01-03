@@ -3,7 +3,7 @@
 
 Imagine::InterfaceHandler::InterfaceHandler()
 {
-    // Setup interface
+    // Set up initial container structure
     rootContainer =
         new Container(Container::HORIZONTAL, {
             new Container(Container::VERTICAL, {
@@ -11,19 +11,19 @@ Imagine::InterfaceHandler::InterfaceHandler()
                     new View(),
                     new TabCollection({
                         createTabSettings()
-                    }, PANEL_START_WIDTH)
+                    })
                 }),
                 new TabCollection({
                     createTabTimeline()
-                }, PANEL_START_HEIGHT)
+                })
             }),
             new TabCollection({
                 createTabProperties()
-            }, PANEL_START_WIDTH)
+            })
         });
-    
-    // This is the root
-    setParent(nullptr);
+
+    // Set root
+    rootContainer->setParent(nullptr);
 }
 
 
@@ -38,6 +38,10 @@ void Imagine::InterfaceHandler::draw()
 {
     drawBegin();
     rootContainer->draw();
+
+    if (isInterfaceState(TAB_MOVE)) {
+        getFocused()->draw();
+    }
 }
 
 
@@ -47,19 +51,16 @@ void Imagine::InterfaceHandler::mouseEvent()
         focus = nullptr;
     }
     rootContainer->mouseEvent();
+    
+    if (isInterfaceState(TAB_MOVE)) {
+        getFocused()->mouseEvent();
+    }
 }
 
 
 void Imagine::InterfaceHandler::keyEvent()
 {
     rootContainer->keyEvent();
-}
-
-
-void Imagine::InterfaceHandler::setParent(Element* parent)
-{
-    this->parent = parent;
-    rootContainer->setParent(this);
 }
 
 

@@ -6,7 +6,6 @@
 #include "interface/element.hpp"
 #include "interface/controls/icons.hpp"
 #include "interface/images.hpp"
-#include "settings/settings.hpp"
 
 
 namespace Imagine

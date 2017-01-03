@@ -4,6 +4,8 @@
 
 void Imagine::TabCollection::update()
 {
+    std::cout << stringRepeat("\t", level) << "tabcollection, tabs=" << tabs.size() << std::endl;
+
     // Get total width of every tab
     int selectTotalWidth = 0;
     for (Tab* tab : tabs)
@@ -56,18 +58,29 @@ void Imagine::TabCollection::draw()
     
     // Draw current tab contents
     selectedTab->draw();
+
+    drawBox(insertLeftBox, Color(COLOR_YELLOW, 0.25f));
+    drawText("left", insertLeftBox.pos, COLOR_WHITE);
+    drawBox(insertRightBox, Color(COLOR_BLUE, 0.25f));
+    drawText("right", insertRightBox.pos, COLOR_WHITE);
+    drawBox(insertTopBox, Color(COLOR_GREEN, 0.25f));
+    drawText("top", insertTopBox.pos, COLOR_WHITE);
+    drawBox(insertBottomBox, Color(COLOR_RED, 0.25f));
+    drawText("bottom", insertBottomBox.pos, COLOR_WHITE);
 }
 
 
 void Imagine::TabCollection::mouseEvent()
 {
+    mouseOn = (parent->mouseOn && mouseInBox(box));
+
     if (mouseOn)
     {
         /*if (mouseInBox(resizeBox))
         {
             // The mouse is near the edge for resizing
             mouseSetCursor(resizeCursor);
-            if (mouseLeftPressed())
+            if (mouseLeftPressed()) 
             {
                 focus();
                 setInterfaceState(PANEL_RESIZE);
@@ -95,7 +108,6 @@ void Imagine::TabCollection::mouseEvent()
         //}
     }
     
-    selectedTab->mouseOn = (mouseOn && mouseInBox(selectedTab->box));
     selectedTab->mouseEvent();
 }
 
@@ -143,8 +155,9 @@ void Imagine::TabCollection::removeTab(Tab* tab)
             selectedTab = (i == tabs.size()) ? tabs[i - 1] : tabs[i];
         }
         else {
-            selectedTab = nullptr;
-            visible = false;
+            // No more tabs, remove collection
+            ((Container*)parent)->removeSubContainer(this);
+            return;
         }
     }
 }

@@ -25,7 +25,7 @@ void Imagine::Tab::update()
     sectionsSize = 0;
 
     // Split into columns
-    int columns = clamp(sectionsBox.width / PANEL_START_WIDTH, 1, (int)sections.size());
+    int columns = clamp(sectionsBox.width / CONTAINER_START_SIZE, 1, (int)sections.size());
     int columnWidth = sectionsBox.width / columns - TAB_CONTENT_PADDING * (columns - 1);
     int columnSection = 0;
     int column = 0;
@@ -97,7 +97,7 @@ void Imagine::Tab::mouseEvent()
     }
 
     // The tab title has been clicked and the mouse is held down
-    if (isFocused() && isInterfaceState(TAB_CLICK))
+    else if (isFocused() && isInterfaceState(TAB_CLICK))
     {
         // Cursor was moved while held down, start moving
         if (ScreenPos::distance(mousePosClick(), mousePos()) > 10)
@@ -105,8 +105,7 @@ void Imagine::Tab::mouseEvent()
             setInterfaceState(TAB_MOVE);
             moveStartPos = pos;
             moveSelectStartPos = selectBox.pos;
-            //((Panel*)parent)->removeTab(this);
-            parent->parent->update();
+            ((TabCollection*)parent)->removeTab(this);
         }
 
         // Cursor was released, return to idle state
@@ -116,6 +115,8 @@ void Imagine::Tab::mouseEvent()
     }
     else
     {
+        mouseOn = (parent->mouseOn && mouseInBox(box));
+
         // Click title
         if (isInterfaceState(IDLE) && mouseInBox(selectBox) && mouseLeftPressed()) {
             setInterfaceState(TAB_CLICK);
@@ -124,7 +125,6 @@ void Imagine::Tab::mouseEvent()
 
         // Proceed to sections
         for (TabSection* section : sections) {
-            section->mouseOn = (mouseOn && mouseInBox(sectionsBox));
             section->mouseEvent();
         }
 

@@ -47,7 +47,7 @@ void Imagine::TabSection::draw()
     if (!open) {
         return;
     }
-        
+    
     for (Control* control : controls) {
         control->draw();
     }
@@ -56,6 +56,7 @@ void Imagine::TabSection::draw()
 
 void Imagine::TabSection::mouseEvent()
 {
+    mouseOn = (parent->mouseOn && mouseInBox(box));
     openButton->mouseEvent();
     
     if (!open) {

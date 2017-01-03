@@ -12,14 +12,13 @@ namespace Imagine
     class TabCollection : public Container
     {
         public:
-            TabCollection(std::vector<Tab*> tabs, int size) :
+            TabCollection(std::vector<Tab*> tabs) :
                 Container(OTHER, {}, FIXED)
             {
                 visible = false;
                 for (Tab* tab : tabs) {
                     addTab(tab);
                 }
-                this->sizeFixed = size;
             }
             
             /* Adds an initial tab to the panel. */
