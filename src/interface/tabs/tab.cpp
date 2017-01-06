@@ -1,5 +1,4 @@
-#include "interface/interfacehandler.hpp"
-#include "tab.hpp"
+#include "imagineapp.hpp"
 
 
 void Imagine::Tab::update()
@@ -94,6 +93,7 @@ void Imagine::Tab::mouseEvent()
         pos = moveStartPos + (mousePos() - mousePosClick());
         selectBox.pos = moveSelectStartPos + (mousePos() - mousePosClick());
         update();
+        //TODO: Create own window when outside main window
     }
 
     // The tab title has been clicked and the mouse is held down

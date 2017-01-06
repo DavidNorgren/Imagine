@@ -1,6 +1,7 @@
 #pragma once
 
 #include "interface/element.hpp"
+#include "interface/tabs/tab.hpp"
 
 
 namespace Imagine
@@ -10,6 +11,14 @@ namespace Imagine
     class Container : public Element
     {
         public:
+            enum InsertPosition
+            {
+                LEFT,
+                RIGHT,
+                TOP,
+                BOTTOM,
+                TAB
+            };
             enum Layout
             {
                 HORIZONTAL,
@@ -27,8 +36,11 @@ namespace Imagine
                 this->layout = layout;
                 this->subContainers = subContainers;
                 this->sizeMode = sizeMode;
-                insertLeftSize = insertRightSize = insertTopSize = insertBottomSize = 0;
+                insertOffset[LEFT] = insertOffset[RIGHT] = insertOffset[TOP] = insertOffset[BOTTOM] = -CONTAINER_INSERT_SIZE;
             }
+
+            /* Adds a tab to the container. */
+            virtual void addTab(Tab* tab, InsertPosition position = TAB, int index = -1);
 
             /* Add a subcontainer */
             void addSubContainer(Container* container, int index = -1);
@@ -51,11 +63,11 @@ namespace Imagine
 
             SizeMode sizeMode;
             bool visible = true;
-            int sizeFixed = CONTAINER_START_SIZE, level = 0;
+            int sizeFixed = CONTAINER_START_SIZE;
             float sizeFill = 1.f;
 
-            ScreenArea insertLeftBox, insertRightBox, insertTopBox, insertBottomBox;
-            int insertLeftSize, insertRightSize, insertTopSize, insertBottomSize;
+            ScreenArea insertBox[4];
+            int insertOffset[4];
     };
 
 }

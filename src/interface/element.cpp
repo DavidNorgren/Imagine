@@ -9,11 +9,11 @@ void Imagine::Element::setParent(Element* parent)
 
 void Imagine::Element::focus()
 {
-    app->interfaceHandler->focus = this;
+    interface->focus = this;
 }
 
 
 bool Imagine::Element::isFocused()
 {
-    return (app->interfaceHandler->focus == this);
+    return (interface->focus == this);
 }

@@ -1,5 +1,6 @@
 #include "interface/container.hpp"
 #include "interface/interfacehandler.hpp"
+#include "imagineapp.hpp"
 
 #include <iostream>
 
@@ -8,10 +9,10 @@ void Imagine::Container::update()
 {
     // Calculate visible size of each subcontainer
     int totalSize = (layout == HORIZONTAL ? box.width : box.height);
-    int fillSize = totalSize;
+    int fillSize = totalSize, firstVisible = subContainers.size(), lastVisible = 0;
 
     // Find total size
-    int fillContainers = 0, visibleSubContainers = 0;
+    int fillContainers = 0, visibleSubContainers = 0, i = 0;
     for (Container* container : subContainers)
     {
         if (container->visible)
@@ -23,16 +24,17 @@ void Imagine::Container::update()
                 fillSize -= container->sizeFixed;
             }
             visibleSubContainers++;
+            firstVisible = min(i, firstVisible);
+            lastVisible = max(i, lastVisible);
         }
+        i++;
     }
-
-    std::cout << stringRepeat("\t", level) << "container, layout=" << layout << ", fillContainers = " << fillContainers << std::endl;
 
     // Define subcontainers
     ScreenPos currentPos = pos;
-    for (int i = 0; i < subContainers.size(); i++)
+    i = 0;
+    for (Container* container : subContainers)
     {
-        Container* container = subContainers[i];
         if (container->visible)
         {
             // Calculate visible size
@@ -63,64 +65,106 @@ void Imagine::Container::update()
             }
 
             // Set boundaries for inserting
-            container->insertLeftSize = container->insertRightSize = container->insertTopSize = container->insertBottomSize = CONTAINER_INSERT_SIZE;
+            container->insertOffset[LEFT] = container->insertOffset[RIGHT] = container->insertOffset[TOP] = container->insertOffset[BOTTOM] = 0;
 
-            if (i == 0 || layout != HORIZONTAL) {
-                container->insertLeftSize += insertLeftSize;
+            if (i == firstVisible || layout != HORIZONTAL) {
+                container->insertOffset[LEFT] = insertOffset[LEFT] + CONTAINER_INSERT_SIZE;
             }
-            if (i == subContainers.size() - 1 || layout != HORIZONTAL) {
-                container->insertRightSize += insertRightSize;
+            if (i == lastVisible || layout != HORIZONTAL) {
+                container->insertOffset[RIGHT] = insertOffset[RIGHT] + CONTAINER_INSERT_SIZE;
             }
-            if (i == 0 || layout != VERTICAL) {
-                container->insertTopSize += insertTopSize;
+            if (i == firstVisible || layout != VERTICAL) {
+                container->insertOffset[TOP] = insertOffset[TOP] + CONTAINER_INSERT_SIZE;
             }
-            if (i == subContainers.size() - 1 || layout != VERTICAL) {
-                container->insertBottomSize += insertBottomSize;
+            if (i == lastVisible || layout != VERTICAL) {
+                container->insertOffset[BOTTOM] = insertOffset[BOTTOM] + CONTAINER_INSERT_SIZE;
             }
 
-            container->insertLeftBox = {
-                container->pos + (ScreenPos){ container->insertLeftSize - CONTAINER_INSERT_SIZE, container->insertTopSize - CONTAINER_INSERT_SIZE },
-                CONTAINER_INSERT_SIZE, container->box.height - (container->insertTopSize + container->insertBottomSize - CONTAINER_INSERT_SIZE * 2)
+            container->insertBox[LEFT] = {
+                container->pos + (ScreenPos){ container->insertOffset[LEFT], container->insertOffset[TOP] },
+                CONTAINER_INSERT_SIZE, container->box.height - (container->insertOffset[TOP] + container->insertOffset[BOTTOM])
             };
-            container->insertRightBox = {
-                container->pos + (ScreenPos){ container->box.width - container->insertRightSize, container->insertTopSize - CONTAINER_INSERT_SIZE },
-                CONTAINER_INSERT_SIZE, container->box.height - (container->insertTopSize + container->insertBottomSize - CONTAINER_INSERT_SIZE * 2)
+            container->insertBox[RIGHT] = {
+                container->pos + (ScreenPos){ container->box.width - container->insertOffset[RIGHT] - CONTAINER_INSERT_SIZE, container->insertOffset[TOP] },
+                CONTAINER_INSERT_SIZE, container->box.height - (container->insertOffset[TOP] + container->insertOffset[BOTTOM])
             };
-            container->insertTopBox = {
-                container->pos + (ScreenPos){ container->insertLeftSize, container->insertTopSize - CONTAINER_INSERT_SIZE },
-                container->box.width - container->insertLeftSize - container->insertRightSize, CONTAINER_INSERT_SIZE
+            container->insertBox[TOP] = {
+                container->pos + (ScreenPos){ container->insertOffset[LEFT] + CONTAINER_INSERT_SIZE, container->insertOffset[TOP] },
+                container->box.width - container->insertOffset[LEFT] - container->insertOffset[RIGHT] - CONTAINER_INSERT_SIZE * 2, CONTAINER_INSERT_SIZE
             };
-            container->insertBottomBox = {
-                container->pos + (ScreenPos){ container->insertLeftSize, container->box.height - container->insertBottomSize },
-                container->box.width - container->insertLeftSize - container->insertRightSize, CONTAINER_INSERT_SIZE
+            container->insertBox[BOTTOM] = {
+                container->pos + (ScreenPos){ container->insertOffset[LEFT] + CONTAINER_INSERT_SIZE, container->box.height - container->insertOffset[BOTTOM] - CONTAINER_INSERT_SIZE },
+                container->box.width - container->insertOffset[LEFT] - container->insertOffset[RIGHT] - CONTAINER_INSERT_SIZE * 2, CONTAINER_INSERT_SIZE
             };
 
             // Update subcontainer
             container->update();
         }
+        i++;
     }
 }
 
 
 void Imagine::Container::draw()
 {
+    int i = 0;
     for (Container* container : subContainers)
     {
-        if (container->visible) {
+        if (container->visible)
+        {
             container->draw();
+
+            if (interface->moveContainer == this && interface->moveIndex == i)
+            {
+                switch (interface->moveContainerInsertPosition)
+                {
+                    case LEFT:
+                    {
+                        drawBox(
+                            { container->pos, CONTAINER_INSERT_SIZE, container->box.height },
+                            Color(COLOR_YELLOW, 0.25f)
+                        );
+                        break;
+                    }
+                    case RIGHT: {
+                        drawBox(
+                            { { container->pos.x + container->box.width - CONTAINER_INSERT_SIZE, container->pos.y },
+                            CONTAINER_INSERT_SIZE, container->box.height },
+                            Color(COLOR_YELLOW, 0.25f)
+                        );
+                        break;
+                    }
+                    case TOP: {
+                        drawBox(
+                            { container->pos, container->box.width, CONTAINER_INSERT_SIZE },
+                            Color(COLOR_YELLOW, 0.25f)
+                        );
+                        break;
+                    }
+                    case BOTTOM: {
+                        drawBox(
+                            { { container->pos.x, container->pos.y + container->box.height - CONTAINER_INSERT_SIZE },
+                            container->box.width, CONTAINER_INSERT_SIZE },
+                            Color(COLOR_YELLOW, 0.25f)
+                        );
+                        break;
+                    }
+                }
+            }
         }
+        i++;
     }
 
-    if (parent) {
-        drawBox(insertLeftBox, Color(COLOR_YELLOW, 0.25f));
-        drawText("left", insertLeftBox.pos, COLOR_WHITE);
-        drawBox(insertRightBox, Color(COLOR_BLUE, 0.25f));
-        drawText("right", insertRightBox.pos, COLOR_WHITE);
-        drawBox(insertTopBox, Color(COLOR_GREEN, 0.25f));
-        drawText("top", insertTopBox.pos, COLOR_WHITE);
-        drawBox(insertBottomBox, Color(COLOR_RED, 0.25f));
-        drawText("bottom", insertBottomBox.pos, COLOR_WHITE);
-    }
+    /*if (parent) {
+        drawBox(insertBox[LEFT], Color(COLOR_YELLOW, 0.25f));
+        drawText("left", insertBox[LEFT].pos, COLOR_WHITE);
+        drawBox(insertBox[RIGHT], Color(COLOR_BLUE, 0.25f));
+        drawText("right", insertBox[RIGHT].pos, COLOR_WHITE);
+        drawBox(insertBox[TOP], Color(COLOR_GREEN, 0.25f));
+        drawText("top", insertBox[TOP].pos, COLOR_WHITE);
+        drawBox(insertBox[BOTTOM], Color(COLOR_RED, 0.25f));
+        drawText("bottom", insertBox[BOTTOM].pos, COLOR_WHITE);
+    }*/
 }
 
 
@@ -128,58 +172,39 @@ void Imagine::Container::mouseEvent()
 {
     if (isInterfaceState(TAB_MOVE))
     {
-        // Drop the tab
-        if (!mouseLeftDown())
+        int i = 0;
+        for (Container* container : subContainers)
         {
-            for (int i = 0; i < subContainers.size(); i++)
+            if (container->visible)
             {
-                Container* container = subContainers[i];
-
-                if (mouseInBox(container->insertLeftBox) ||
-                    mouseInBox(container->insertRightBox) ||
-                    mouseInBox(container->insertTopBox) ||
-                    mouseInBox(container->insertBottomBox))
+                container->mouseEvent();
+    
+                // No existing tab selected
+                if (!interface->moveContainer && mouseInBox(container->box))
                 {
-                    TabCollection* newTabCollection = new TabCollection({ (Tab*)getFocused() });
-
-                    if (layout == HORIZONTAL)
-                    {
-                        if (mouseInBox(container->insertLeftBox)) {
-                            addSubContainer(newTabCollection, i);
-                        }
-                        else if (mouseInBox(container->insertRightBox)) {
-                            addSubContainer(newTabCollection, i + 1);
-                        }
-                        else if (mouseInBox(container->insertTopBox)) {
-                            replaceSubContainer(container, new Container(VERTICAL, { newTabCollection, container }));
-                        }
-                        else if (mouseInBox(container->insertBottomBox)) {
-                            replaceSubContainer(container, new Container(VERTICAL, { container, newTabCollection }));
-                        }
+                    if (mouseInBox(container->insertBox[LEFT])) {
+                        interface->moveContainerInsertPosition = LEFT;
+                        interface->moveContainer = this;
+                        interface->moveIndex = i;
                     }
-                    else
-                    {
-                        if (mouseInBox(container->insertLeftBox)) {
-                            replaceSubContainer(container, new Container(HORIZONTAL, { newTabCollection, container }));
-                        }
-                        else if (mouseInBox(container->insertRightBox)) {
-                            replaceSubContainer(container, new Container(HORIZONTAL, { container, newTabCollection }));
-                        }
-                        else if (mouseInBox(container->insertTopBox)) {
-                            addSubContainer(newTabCollection, i);
-                        }
-                        else if (mouseInBox(container->insertBottomBox)) {
-                            addSubContainer(newTabCollection, i + 1);
-                        }
+                    else if (mouseInBox(container->insertBox[RIGHT])) {
+                        interface->moveContainerInsertPosition = RIGHT;
+                        interface->moveContainer = this;
+                        interface->moveIndex = i;
                     }
-                    update();
-                    setInterfaceState(IDLE);
-                    break;
-                }
-                else {
-                    container->mouseEvent();
+                    else if (mouseInBox(container->insertBox[TOP])) {
+                        interface->moveContainerInsertPosition = TOP;
+                        interface->moveContainer = this;
+                        interface->moveIndex = i;
+                    }
+                    else if (mouseInBox(container->insertBox[BOTTOM])) {
+                        interface->moveContainerInsertPosition = BOTTOM;
+                        interface->moveContainer = this;
+                        interface->moveIndex = i;
+                    }
                 }
             }
+            i++;
         }
     }
     else
@@ -211,8 +236,45 @@ void Imagine::Container::setParent(Element* parent)
 {
     this->parent = parent;
     for (Container* container : subContainers) {
-        container->level = level + 1;
         container->setParent(this);
+    }
+}
+
+
+void Imagine::Container::addTab(Tab* tab, InsertPosition position, int index)
+{
+    TabCollection* newTabCollection = new TabCollection({ (Tab*)getFocused() });
+    Container* container = subContainers[index];
+
+    if (layout == HORIZONTAL)
+    {
+        if (position == LEFT) {
+            addSubContainer(newTabCollection, index);
+        }
+        else if (position == RIGHT) {
+            addSubContainer(newTabCollection, index + 1);
+        }
+        else if (position == TOP) {
+            replaceSubContainer(container, new Container(VERTICAL, { newTabCollection, container }));
+        }
+        else if (position == BOTTOM) {
+            replaceSubContainer(container, new Container(VERTICAL, { container, newTabCollection }));
+        }
+    }
+    else
+    {
+        if (position == LEFT) {
+            replaceSubContainer(container, new Container(HORIZONTAL, { newTabCollection, container }));
+        }
+        else if (position == RIGHT) {
+            replaceSubContainer(container, new Container(HORIZONTAL, { container, newTabCollection }));
+        }
+        else if (position == TOP) {
+            addSubContainer(newTabCollection, index);
+        }
+        else if (position == BOTTOM) {
+            addSubContainer(newTabCollection, index + 1);
+        }
     }
 }
 
@@ -225,7 +287,9 @@ void Imagine::Container::addSubContainer(Container* container, int index)
     }
 
     vectorInsert(subContainers, index, container);
+
     setParent(parent);
+    update();
 }
 
 
@@ -236,7 +300,8 @@ void Imagine::Container::removeSubContainer(Container* container)
 
     if (parent)
     {
-        if (subContainers.size() == 1) {
+        if (subContainers.size() == 1)
+        {
             ((Container*)parent)->replaceSubContainer(this, subContainers[0]);
             delete this;
             return;
@@ -259,6 +324,7 @@ void Imagine::Container::replaceSubContainer(Container* oldContainer, Container*
     newContainer->sizeMode = oldContainer->sizeMode;
     newContainer->sizeFixed = oldContainer->sizeFixed;
     newContainer->sizeFill = oldContainer->sizeFill;
+
     setParent(parent);
     update();
 }

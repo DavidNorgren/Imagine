@@ -2,10 +2,27 @@
 #include "imagineapp.hpp"
 
 
+Imagine::TabCollection::TabCollection(std::vector<Tab*> tabs) :
+    Container(OTHER, {}, FIXED)
+{
+    this->tabs = tabs;
+
+    // Select the first visible tab
+    visible = false;
+    for (Tab* tab : tabs)
+    {
+        if (tab->visible)
+        {
+            visible = true;
+            selectedTab = tab;
+            break;
+        }
+    }
+}
+
+
 void Imagine::TabCollection::update()
 {
-    std::cout << stringRepeat("\t", level) << "tabcollection, tabs=" << tabs.size() << std::endl;
-
     // Get total width of every tab
     int selectTotalWidth = 0;
     for (Tab* tab : tabs)
@@ -45,6 +62,7 @@ void Imagine::TabCollection::draw()
 {
     // Tab selector
     drawBox({ box.pos, box.width, TAB_SELECT_HEIGHT }, SETTING_INTERFACE_COLOR_BACKGROUND);
+    int i = 0;
     for (Tab* tab : tabs)
     {
         if (selectedTab != tab)
@@ -53,42 +71,77 @@ void Imagine::TabCollection::draw()
                             tab->selectBox.pos + (ScreenPos){ tab->selectBox.width / 2, tab->selectBox.height / 2 },
                             CENTER, MIDDLE,
                             SETTING_INTERFACE_COLOR_TEXT);
+
+            if (interface->moveContainer == this && interface->moveIndex == i) {
+                drawBox(tab->selectBox, Color(COLOR_YELLOW, 0.25f));
+            }
         }
+        i++;
+    }       
+
+    if (interface->moveContainer == this && interface->moveIndex == i) {
+        drawBox(moveLastBox, Color(COLOR_YELLOW, 0.25f));
     }
     
     // Draw current tab contents
     selectedTab->draw();
 
-    drawBox(insertLeftBox, Color(COLOR_YELLOW, 0.25f));
-    drawText("left", insertLeftBox.pos, COLOR_WHITE);
-    drawBox(insertRightBox, Color(COLOR_BLUE, 0.25f));
-    drawText("right", insertRightBox.pos, COLOR_WHITE);
-    drawBox(insertTopBox, Color(COLOR_GREEN, 0.25f));
-    drawText("top", insertTopBox.pos, COLOR_WHITE);
-    drawBox(insertBottomBox, Color(COLOR_RED, 0.25f));
-    drawText("bottom", insertBottomBox.pos, COLOR_WHITE);
+    if (interface->moveContainer == this && interface->moveIndex == vectorFind(tabs, selectedTab)) {
+        drawBox(selectedTab->box, Color(COLOR_YELLOW, 0.25f));
+        drawBox(selectedTab->selectBox, Color(COLOR_YELLOW, 0.25f));
+    }
 }
 
 
 void Imagine::TabCollection::mouseEvent()
 {
-    mouseOn = (parent->mouseOn && mouseInBox(box));
-
-    if (mouseOn)
+    if (isInterfaceState(TAB_MOVE))
     {
-        /*if (mouseInBox(resizeBox))
+        if (mouseInBox(box))
         {
-            // The mouse is near the edge for resizing
-            mouseSetCursor(resizeCursor);
-            if (mouseLeftPressed()) 
+            Tab* movedTab = (Tab*)getFocused();
+
+            // Check mouse with each tab header
+            int i = 0;
+            for (Tab* tab : tabs)
             {
-                focus();
-                setInterfaceState(PANEL_RESIZE);
-                sizeResize = sizeVisible;
+                if (mouseInBox(tab->selectBox)) {
+                    interface->moveContainer = this;
+                    interface->moveIndex = i;
+                    break;
+                }
+                i++;
+            }
+
+            // Check with last tab
+            moveLastBox = {
+                { tabs.back()->selectBox.pos.x + tabs.back()->selectBox.width, tabs.back()->selectBox.pos.y },
+                movedTab->selectBox.width,
+                TAB_SELECT_HEIGHT
+            };
+            if (mouseInBox(moveLastBox)) {
+                interface->moveContainer = this;
+                interface->moveIndex = tabs.size();
+            }
+
+            // Check with currently selected tab
+            ScreenArea currentSelectBox = {
+                { insertBox[LEFT].pos.x + CONTAINER_INSERT_SIZE, insertBox[TOP].pos.y + CONTAINER_INSERT_SIZE },
+                max(0, insertBox[RIGHT].pos.x - (insertBox[LEFT].pos.x + CONTAINER_INSERT_SIZE)),
+                max(0, insertBox[BOTTOM].pos.y - (insertBox[TOP].pos.y + CONTAINER_INSERT_SIZE))
+            };
+            if (mouseInBox(currentSelectBox)) {
+                interface->moveContainer = this;
+                interface->moveIndex = vectorFind(tabs, selectedTab);
             }
         }
-        else
-        {*/
+    }
+    else
+    {
+        mouseOn = (parent->mouseOn && mouseInBox(box));
+
+        if (mouseOn)
+        {
             // Tab selector
             for (Tab* tab : tabs)
             {
@@ -105,10 +158,10 @@ void Imagine::TabCollection::mouseEvent()
                     }
                 }
             }
-        //}
+        }
+        
+        selectedTab->mouseEvent();
     }
-    
-    selectedTab->mouseEvent();
 }
 
 
@@ -127,7 +180,7 @@ void Imagine::TabCollection::setParent(Element* parent)
 }
 
 
-void Imagine::TabCollection::addTab(Tab* tab, int index)
+void Imagine::TabCollection::addTab(Tab* tab, InsertPosition position, int index)
 {
     // Append
     if (index < 0) {
@@ -139,6 +192,9 @@ void Imagine::TabCollection::addTab(Tab* tab, int index)
         selectedTab = tab;
         visible = true;
     }
+
+    tab->setParent(this);
+    update();
 }
 
 
@@ -149,15 +205,17 @@ void Imagine::TabCollection::removeTab(Tab* tab)
     vectorErase(tabs, i);
 
     // If this was the selected tab, select the next or previous one
-    if (selectedTab == tab)
+    if (tabs.size() > 0)
     {
-        if (tabs.size() > 0) {
+        if (selectedTab == tab) {
             selectedTab = (i == tabs.size()) ? tabs[i - 1] : tabs[i];
         }
-        else {
-            // No more tabs, remove collection
-            ((Container*)parent)->removeSubContainer(this);
-            return;
-        }
     }
+    else {
+        // No more tabs, remove
+        ((Container*)parent)->removeSubContainer(this);
+        return;
+    }
+
+    update();
 }

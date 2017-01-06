@@ -4,11 +4,32 @@
 
 void Imagine::View::update()
 {
-    std::cout << stringRepeat("\t", level) << "view " << std::endl;
     contentBox = {
         { pos.x, pos.y + VIEW_HEADER_HEIGHT },
         box.width,
         box.height - VIEW_HEADER_HEIGHT
+    };
+
+    // Define boxes for inserting
+    insertBox[LEFT] = {
+        pos + (ScreenPos){ insertOffset[LEFT], insertOffset[TOP] },
+        box.width / 3 - insertOffset[LEFT],
+        box.height - (insertOffset[TOP] + insertOffset[BOTTOM])
+    };
+    insertBox[RIGHT] = {
+        { pos.x + (box.width / 3) * 2, pos.y + insertOffset[TOP] },
+        box.width / 3 - insertOffset[RIGHT],
+        box.height - (insertOffset[TOP] + insertOffset[BOTTOM])
+    };
+    insertBox[TOP] = {
+        { pos.x + box.width / 3, pos.y + insertOffset[TOP] },
+        box.width / 3,
+        box.height / 2 - insertOffset[TOP]
+    };
+    insertBox[BOTTOM] = {
+        { pos.x + box.width / 3, pos.y + box.height / 2 },
+        box.width / 3,
+        box.height / 2 - insertOffset[BOTTOM]
     };
 }
 
@@ -17,21 +38,11 @@ void Imagine::View::draw()
 {
     drawBox(box, SETTING_INTERFACE_COLOR_BACKGROUND);
     drawBox(contentBox, { 0.3f });
-    
-    drawBox(insertLeftBox, Color(COLOR_YELLOW, 0.25f));
-    drawText("left", insertLeftBox.pos, COLOR_WHITE);
-    drawBox(insertRightBox, Color(COLOR_BLUE, 0.25f));
-    drawText("right", insertRightBox.pos, COLOR_WHITE);
-    drawBox(insertTopBox, Color(COLOR_GREEN, 0.25f));
-    drawText("top", insertTopBox.pos, COLOR_WHITE);
-    drawBox(insertBottomBox, Color(COLOR_RED, 0.25f));
-    drawText("bottom", insertBottomBox.pos, COLOR_WHITE);
 }
 
 
 void Imagine::View::mouseEvent()
 {
-
 }
 
 

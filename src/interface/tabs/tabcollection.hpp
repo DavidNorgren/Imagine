@@ -12,19 +12,12 @@ namespace Imagine
     class TabCollection : public Container
     {
         public:
-            TabCollection(std::vector<Tab*> tabs) :
-                Container(OTHER, {}, FIXED)
-            {
-                visible = false;
-                for (Tab* tab : tabs) {
-                    addTab(tab);
-                }
-            }
+            TabCollection(std::vector<Tab*> tabs);
             
-            /* Adds an initial tab to the panel. */
-            void addTab(Tab* tab, int index = -1);
+            /* Adds a tab to the collection. */
+            void addTab(Tab* tab, InsertPosition position = TAB, int index = -1) override;
 
-            /* Removes a given tab from the panel. */
+            /* Removes a given tab from the collection. */
             void removeTab(Tab* tab);
 
             /* Element methods. */
@@ -36,9 +29,8 @@ namespace Imagine
 
             Tab* selectedTab = nullptr;
             std::vector<Tab*> tabs;
-
-            Cursor resizeCursor;
-            float moveGlow = 0.f;
+            ScreenArea moveLastBox;
+            float moveLastGlow = 0.f;
     };
 
 }

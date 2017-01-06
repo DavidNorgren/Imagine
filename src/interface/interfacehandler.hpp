@@ -47,6 +47,11 @@ namespace Imagine
             Tab* createTabProperties();
             Tab* createTabTimeline();
             Tab* createTabSettings();
+
+            /* When moving a container/tab. */
+            Container* moveContainer;
+            Container::InsertPosition moveContainerInsertPosition;
+            int moveIndex;
     };
 
     /* Get/set interface state. */

@@ -13,10 +13,10 @@ namespace Imagine
                 Container(OTHER, {}, FILL) {};
 
             /* Element methods. */
-            void update();
-            void draw();
-            void mouseEvent();
-            void keyEvent();
+            void update() override;
+            void draw() override;
+            void mouseEvent() override;
+            void keyEvent() override;
 
             ScreenArea contentBox;
     };

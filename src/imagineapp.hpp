@@ -38,3 +38,5 @@ namespace Imagine
 
 /* Used to access the program from other class scopes. */
 extern Imagine::App* app;
+#undef interface
+extern Imagine::InterfaceHandler* interface;

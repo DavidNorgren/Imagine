@@ -33,11 +33,14 @@ namespace Imagine
 
             string name;
             bool visible, closeable;
+
             std::vector<TabSection*> sections;
             ScreenArea selectBox, sectionsBox;
             ScreenPos sectionsOffset = { 0, 0 }, moveStartPos, moveSelectStartPos;
-            int sectionsSize = 0;
+            float moveGlow = 0.f;
+            
             ScrollBar* scrollBar;
+            int sectionsSize = 0;
     };
     
 }

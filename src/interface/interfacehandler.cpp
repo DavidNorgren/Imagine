@@ -42,18 +42,40 @@ void Imagine::InterfaceHandler::draw()
     if (isInterfaceState(TAB_MOVE)) {
         getFocused()->draw();
     }
+
+    drawTextAligned(toString(app->mainWindow->fps), { app->mainWindow->width, 0 }, RIGHT, TOP, COLOR_YELLOW);
 }
 
 
 void Imagine::InterfaceHandler::mouseEvent()
 {
     if (isInterfaceState(IDLE) && mouseLeftPressed()) {
-        focus = nullptr;
+        setFocused(nullptr);
     }
-    rootContainer->mouseEvent();
-    
-    if (isInterfaceState(TAB_MOVE)) {
+
+    if (isInterfaceState(TAB_MOVE))
+    {
+        moveContainer = nullptr;
+        rootContainer->mouseEvent();
         getFocused()->mouseEvent();
+
+        // Release the tab
+        if (!mouseLeftDown())
+        {
+            // Mouse is in a blank spot somewhere
+            if (!moveContainer) {
+                moveContainer = rootContainer;
+                moveContainerInsertPosition = Container::RIGHT;
+                moveIndex = moveContainer->subContainers.size() - 1;
+            }
+
+            moveContainer->addTab((Tab*)getFocused(), moveContainerInsertPosition, moveIndex);
+            setInterfaceState(IDLE);
+            moveContainer = nullptr;
+        }
+    }
+    else {
+        rootContainer->mouseEvent();
     }
 }
 
@@ -66,13 +88,13 @@ void Imagine::InterfaceHandler::keyEvent()
 
 void Imagine::setInterfaceState(InterfaceState state)
 {
-    app->interfaceHandler->state = state;
+    interface->state = state;
 }
 
 
 Imagine::InterfaceState Imagine::getInterfaceState()
 {
-    return app->interfaceHandler->state;
+    return interface->state;
 }
 
 
@@ -84,13 +106,13 @@ bool Imagine::isInterfaceState(InterfaceState state)
 
 void Imagine::setFocused(Element* element)
 {
-    app->interfaceHandler->focus = element;
+    interface->focus = element;
 }
 
 
 Imagine::Element* Imagine::getFocused()
 {
-    return app->interfaceHandler->focus;
+    return interface->focus;
 }
 
 

@@ -11,11 +11,12 @@ int main()
 
 
 Imagine::App* app;
+Imagine::InterfaceHandler* interface;
 
 Imagine::App::App()
 {
     app = this;
-    interfaceHandler = new InterfaceHandler();
+    interface = interfaceHandler = new InterfaceHandler();
     mainWindow->setTitle("Imagine");
     launch();
 }
