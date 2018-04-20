@@ -1,4 +1,4 @@
-# Imagine
+# imagine
 <p align="center">
   <img width=800 src="https://www.stuffbydavid.com/i/imagine.png" />
 </p>
