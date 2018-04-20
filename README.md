@@ -4,7 +4,7 @@
 </p>
 
 
-**Imagine** is/was an experiment with making a flexible C++ GUI.
+**imagine** is/was an experiment with making a flexible C++ GUI.
   
 <img width=700 src="https://i.gyazo.com/1a4bb7e4b2cea1741cd772e211e2f47f.gif" />
 
